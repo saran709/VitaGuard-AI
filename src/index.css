@@ -8,7 +8,7 @@
   /* Calibrated Clinical Color Palette Tokens */
   --color-clinical-canvas: #F3F6FA;
   --color-clinical-surface: #FFFFFF;
-  --color-clinical-well: #F7F9FC;
+  --color-clinical-well: #F8FAFC;
   --color-clinical-muted: #ECF1F7;
   --color-clinical-border: #DCE4EE;
   --color-clinical-border-strong: #C3D0E0;
@@ -22,10 +22,34 @@
 }
 
 :root {
+  /* ==========================================================================
+     1. SPACING SCALES (Telemetry Rhythm & Visual Proximity)
+     ========================================================================== */
+  --vg-space-2xs: 0.125rem; /* 2px - Micro indicators, hairline offsets */
+  --vg-space-xs: 0.25rem;   /* 4px - Badge inner padding, tight icon margins */
+  --vg-space-sm: 0.5rem;    /* 8px - Metric secondary items, pill padding */
+  --vg-space-md: 0.75rem;   /* 12px - Telemetry header padding, compact wells */
+  --vg-space-lg: 1rem;      /* 16px - Standard gap, panel inner padding */
+  --vg-space-xl: 1.25rem;   /* 20px - Telemetry card primary padding */
+  --vg-space-2xl: 1.5rem;   /* 24px - Section grouping gaps */
+  --vg-space-3xl: 2rem;     /* 32px - Major workspace boundaries */
+
+  /* ==========================================================================
+     2. FONT-WEIGHT SCALES (Strict Typographic Hierarchy)
+     ========================================================================== */
+  --vg-font-regular: 400;   /* Secondary narrative, descriptive audit notes */
+  --vg-font-medium: 500;    /* Sensor units, table cell data, input text */
+  --vg-font-semibold: 600;  /* Metric card labels, buttons, subheadings */
+  --vg-font-bold: 700;      /* Large telemetry values, risk badges, section titles */
+  --vg-font-extrabold: 800; /* Emergency headlines, hero risk level callouts */
+
+  /* ==========================================================================
+     3. 60-30-10 CLINICAL COLOR SYSTEM
+     ========================================================================== */
   /* 60% Primary Canvas & Structural Surfaces */
   --vg-bg-canvas: #F3F6FA;
   --vg-surface-primary: #FFFFFF;
-  --vg-surface-subtle: #F7F9FC;
+  --vg-surface-subtle: #F8FAFC;
   --vg-surface-muted: #ECF1F7;
   --vg-surface-console: #0D1F38;
   --vg-surface-console-well: #081526;
@@ -56,7 +80,7 @@
   --vg-telemetry-cyan-ink: #0369A1;
 
   /* Calibrated Semantic Risk & Safety States */
-  /* Nominal / Low Risk (Clinical Emerald-Teal) */
+  /* Nominal / Low Risk (Clinical Emerald) */
   --vg-status-low-bg: #ECFDF5;
   --vg-status-low-border: #A7F3D0;
   --vg-status-low-accent: #059669;
@@ -82,9 +106,29 @@
   --vg-status-critical-accent: #DC2626;
   --vg-status-critical-ink: #991B1B;
 
-  /* Single-Elevation Card Shadow */
-  --vg-shadow-card: 0 1px 2px 0 rgba(12, 25, 44, 0.03), 0 1px 3px 0 rgba(15, 40, 80, 0.02);
-  --vg-shadow-elevated: 0 4px 12px -2px rgba(12, 25, 44, 0.06), 0 2px 4px -2px rgba(12, 25, 44, 0.04);
+  /* ==========================================================================
+     4. LAYERED DEPTH & SHADOW SCALES
+     ========================================================================== */
+  /* Micro elevation for segmented controls, badges, buttons */
+  --vg-shadow-xs: 0 1px 2px 0 rgba(12, 25, 44, 0.04);
+
+  /* Primary telemetry card elevation (crisp hairline + soft ambient drop) */
+  --vg-shadow-card: 0 1px 3px 0 rgba(12, 25, 44, 0.04), 0 1px 2px -1px rgba(12, 25, 44, 0.03);
+
+  /* Card hover lift for interactive simulation presets & action items */
+  --vg-shadow-card-hover: 0 6px 16px -2px rgba(12, 25, 44, 0.08), 0 2px 6px -2px rgba(12, 25, 44, 0.04);
+
+  /* Elevated modals, floating emergency popovers, and sticky bars */
+  --vg-shadow-elevated: 0 12px 28px -4px rgba(12, 25, 44, 0.09), 0 4px 10px -3px rgba(12, 25, 44, 0.05);
+
+  /* Recessed telemetry well inner shadow */
+  --vg-shadow-inner: inset 0 1px 2px 0 rgba(12, 25, 44, 0.03);
+
+  /* Semantic Alert Glow Shadows for High-Stress Visual Triage */
+  --vg-shadow-alert-low: 0 0 0 1px rgba(5, 150, 105, 0.16), 0 2px 6px -1px rgba(5, 150, 105, 0.1);
+  --vg-shadow-alert-moderate: 0 0 0 1px rgba(217, 119, 6, 0.2), 0 3px 10px -1px rgba(217, 119, 6, 0.12);
+  --vg-shadow-alert-high: 0 0 0 1.5px rgba(234, 88, 12, 0.26), 0 4px 14px -1px rgba(234, 88, 12, 0.16);
+  --vg-shadow-alert-critical: 0 0 0 2px rgba(220, 38, 38, 0.32), 0 6px 20px -2px rgba(220, 38, 38, 0.22);
 }
 
 @layer base {
@@ -111,8 +155,10 @@
     font-family: var(--font-display);
     letter-spacing: -0.02em;
     color: var(--vg-ink-primary);
+    font-weight: var(--vg-font-bold);
   }
 
+  /* Telemetry numerical stability - guarantees zero layout-jitter during live data updates */
   code, pre, kbd, samp, .font-mono {
     font-family: var(--font-mono);
     font-variant-numeric: tabular-nums;
@@ -222,30 +268,61 @@
   }
 }
 
-/* Reusable Calibrated Component Primitives */
+/* ==========================================================================
+   5. REUSABLE CALIBRATED COMPONENT PRIMITIVES
+   ========================================================================== */
+
+/* Standard Clinical Card */
 .vg-card {
   background-color: var(--vg-surface-primary);
   border: 1px solid var(--vg-border-default);
   border-radius: 0.75rem;
   box-shadow: var(--vg-shadow-card);
+  transition: box-shadow 180ms ease, border-color 180ms ease;
 }
 
+/* Interactive Card Variant (Presets, Toggles, Selectables) */
+.vg-card-interactive {
+  background-color: var(--vg-surface-primary);
+  border: 1px solid var(--vg-border-default);
+  border-radius: 0.75rem;
+  box-shadow: var(--vg-shadow-card);
+  transition: box-shadow 180ms ease, border-color 180ms ease, transform 150ms ease;
+  cursor: pointer;
+}
+
+.vg-card-interactive:hover {
+  border-color: var(--vg-border-strong);
+  box-shadow: var(--vg-shadow-card-hover);
+  transform: translateY(-1px);
+}
+
+/* Recessed Telemetry Wells */
 .vg-well {
   background-color: var(--vg-surface-subtle);
   border: 1px solid var(--vg-border-hairline);
   border-radius: 0.625rem;
+  box-shadow: var(--vg-shadow-inner);
 }
 
+/* Primary Clinical Action Button */
 .vg-btn-primary {
   background-color: var(--vg-brand-primary);
   color: #FFFFFF;
-  font-weight: 600;
+  font-weight: var(--vg-font-semibold);
   border-radius: 0.5rem;
-  transition: background-color 150ms ease, box-shadow 150ms ease;
+  box-shadow: var(--vg-shadow-xs);
+  transition: background-color 150ms ease, box-shadow 150ms ease, transform 120ms ease;
 }
 
 .vg-btn-primary:hover:not(:disabled) {
   background-color: var(--vg-brand-primary-hover);
+  box-shadow: 0 2px 6px rgba(21, 94, 239, 0.28);
+}
+
+.vg-btn-primary:active:not(:disabled) {
+  background-color: var(--vg-brand-primary-active);
+  transform: scale(0.99);
 }
 
 .vg-btn-primary:focus-visible {
@@ -253,16 +330,23 @@
   outline-offset: 2px;
 }
 
+/* Verified "I am safe" Safety Action Button */
 .vg-btn-safe {
   background-color: var(--vg-status-low-btn);
   color: #FFFFFF;
-  font-weight: 600;
+  font-weight: var(--vg-font-bold);
   border-radius: 0.5rem;
-  transition: background-color 150ms ease, box-shadow 150ms ease;
+  box-shadow: 0 1px 3px rgba(4, 120, 87, 0.25);
+  transition: background-color 150ms ease, box-shadow 150ms ease, transform 120ms ease;
 }
 
 .vg-btn-safe:hover:not(:disabled) {
   background-color: var(--vg-status-low-btn-hover);
+  box-shadow: 0 3px 8px rgba(4, 120, 87, 0.35);
+}
+
+.vg-btn-safe:active:not(:disabled) {
+  transform: scale(0.99);
 }
 
 .vg-btn-safe:focus-visible {
@@ -270,12 +354,14 @@
   outline-offset: 2px;
 }
 
+/* Secondary Button */
 .vg-btn-secondary {
   background-color: var(--vg-surface-primary);
   color: var(--vg-ink-secondary);
   border: 1px solid var(--vg-border-strong);
-  font-weight: 600;
+  font-weight: var(--vg-font-semibold);
   border-radius: 0.5rem;
+  box-shadow: var(--vg-shadow-xs);
   transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
 }
 
@@ -285,12 +371,72 @@
   color: var(--vg-ink-primary);
 }
 
+/* Dense Data Table Header */
 .vg-table-header {
   background-color: var(--vg-surface-subtle);
   border-bottom: 1px solid var(--vg-border-default);
   color: var(--vg-ink-muted);
   font-size: 0.6875rem;
-  font-weight: 700;
+  font-weight: var(--vg-font-bold);
   text-transform: uppercase;
   letter-spacing: 0.05em;
+}
+
+/* ==========================================================================
+   6. TELEMETRY & RISK ALERT TYPOGRAPHY & VISUAL CALLOUTS
+   ========================================================================== */
+
+/* Telemetry Micro-Header Label (e.g., HEART RATE, AMBIENT TEMP) */
+.vg-telemetry-label {
+  font-size: 0.6875rem;
+  font-weight: var(--vg-font-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--vg-ink-muted);
+}
+
+/* Primary Telemetry Metric Value (Large, High Contrast, Tabular Numbers) */
+.vg-telemetry-value {
+  font-family: var(--font-display), var(--font-mono);
+  font-weight: var(--vg-font-bold);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.03em;
+  color: var(--vg-ink-primary);
+}
+
+/* Secondary Telemetry Metric Unit (e.g., bpm, °C, %) */
+.vg-telemetry-unit {
+  font-size: 0.75rem;
+  font-weight: var(--vg-font-medium);
+  color: var(--vg-ink-muted);
+  margin-left: 0.25rem;
+}
+
+/* Risk Alert Banners & Shadow States */
+.vg-alert-low {
+  background-color: var(--vg-status-low-bg);
+  border-color: var(--vg-status-low-border);
+  color: var(--vg-status-low-ink);
+  box-shadow: var(--vg-shadow-alert-low);
+}
+
+.vg-alert-moderate {
+  background-color: var(--vg-status-moderate-bg);
+  border-color: var(--vg-status-moderate-border);
+  color: var(--vg-status-moderate-ink);
+  box-shadow: var(--vg-shadow-alert-moderate);
+}
+
+.vg-alert-high {
+  background-color: var(--vg-status-high-bg);
+  border-color: var(--vg-status-high-border);
+  color: var(--vg-status-high-ink);
+  box-shadow: var(--vg-shadow-alert-high);
+}
+
+.vg-alert-critical {
+  background-color: var(--vg-status-critical-bg);
+  border-color: var(--vg-status-critical-border);
+  color: var(--vg-status-critical-ink);
+  box-shadow: var(--vg-shadow-alert-critical);
 }

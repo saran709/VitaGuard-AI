@@ -27,7 +27,7 @@ import {
   RULE_ENGINE_VERSION,
   SIMULATION_PRESETS,
 } from '../engine/riskEngine';
-import { db, functions, handleFirestoreError } from '../lib/firebase';
+import { auth, db, functions, handleFirestoreError } from '../lib/firebase';
 import {
   AlertLifecycleStatus,
   EmergencyContact,
@@ -267,16 +267,28 @@ export async function initializeUserProfileAndSettings(
   displayName: string
 ): Promise<UserProfile> {
   const cleanUid = sanitizeId(uid);
+  const nowIso = new Date().toISOString();
+  const cleanEmail = (email || 'user@example.com').trim().slice(0, 254);
+  const cleanName = (displayName || cleanEmail.split('@')[0] || 'VitaGuard User')
+    .trim()
+    .slice(0, 100);
+
+  if (!auth.currentUser || auth.currentUser.uid !== cleanUid) {
+    return {
+      uid: cleanUid,
+      email: cleanEmail,
+      displayName: cleanName,
+      simulationNoticeAccepted: true,
+      createdAtIso: nowIso,
+      updatedAtIso: nowIso,
+    };
+  }
+
   const profilePath = `users/${cleanUid}`;
   const profileRef = doc(db, 'users', cleanUid);
 
   try {
     const existingSnap = await getDoc(profileRef);
-    const nowIso = new Date().toISOString();
-    const cleanEmail = (email || 'user@example.com').trim().slice(0, 254);
-    const cleanName = (displayName || cleanEmail.split('@')[0] || 'VitaGuard User')
-      .trim()
-      .slice(0, 100);
 
     if (!existingSnap.exists()) {
       await setDoc(profileRef, {
@@ -316,6 +328,9 @@ export async function saveUserSettingsToFirestore(
   thresholds: RiskThresholds
 ): Promise<void> {
   const cleanUid = sanitizeId(uid);
+  if (!auth.currentUser || auth.currentUser.uid !== cleanUid) {
+    return;
+  }
   const path = `users/${cleanUid}/settings/default`;
   const settingsRef = doc(db, 'users', cleanUid, 'settings', 'default');
 
@@ -356,6 +371,9 @@ export async function saveEmergencyContactToFirestore(
   contact: EmergencyContact
 ): Promise<void> {
   const cleanUid = sanitizeId(uid);
+  if (!auth.currentUser || auth.currentUser.uid !== cleanUid) {
+    return;
+  }
   const cleanContactId = sanitizeId(contact.id);
   const path = `users/${cleanUid}/emergencyContacts/${cleanContactId}`;
   const contactRef = doc(db, 'users', cleanUid, 'emergencyContacts', cleanContactId);
@@ -403,6 +421,9 @@ export async function deleteEmergencyContactFromFirestore(
   contactId: string
 ): Promise<void> {
   const cleanUid = sanitizeId(uid);
+  if (!auth.currentUser || auth.currentUser.uid !== cleanUid) {
+    return;
+  }
   const cleanContactId = sanitizeId(contactId);
   const path = `users/${cleanUid}/emergencyContacts/${cleanContactId}`;
   try {
@@ -941,6 +962,10 @@ export function subscribeToUserSafetyData(
   }
 ): Unsubscribe {
   const cleanUid = sanitizeId(uid);
+  // Only attach onSnapshot listeners if auth is ready and user is authenticated with matching UID
+  if (!auth.currentUser || auth.currentUser.uid !== cleanUid) {
+    return () => {};
+  }
   const unsubscribes: Unsubscribe[] = [];
 
   // 1. Settings listener
@@ -983,11 +1008,6 @@ export function subscribeToUserSafetyData(
       },
       (error) => {
         callbacks.onSyncError(error.message);
-        try {
-          handleFirestoreError(error, OperationType.GET, settingsPath);
-        } catch {
-          // Handled via callback
-        }
       }
     )
   );
@@ -1021,11 +1041,6 @@ export function subscribeToUserSafetyData(
       },
       (error) => {
         callbacks.onSyncError(error.message);
-        try {
-          handleFirestoreError(error, OperationType.LIST, contactsPath);
-        } catch {
-          // Handled via callback
-        }
       }
     )
   );
@@ -1070,11 +1085,6 @@ export function subscribeToUserSafetyData(
       },
       (error) => {
         callbacks.onSyncError(error.message);
-        try {
-          handleFirestoreError(error, OperationType.LIST, alertsPath);
-        } catch {
-          // Handled via callback
-        }
       }
     )
   );
@@ -1109,11 +1119,6 @@ export function subscribeToUserSafetyData(
       },
       (error) => {
         callbacks.onSyncError(error.message);
-        try {
-          handleFirestoreError(error, OperationType.LIST, eventsPath);
-        } catch {
-          // Handled via callback
-        }
       }
     )
   );
