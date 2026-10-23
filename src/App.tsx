@@ -1330,7 +1330,7 @@ export default function App() {
   );
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#F8FAFC] text-slate-900">
+    <div className="min-h-screen flex flex-col bg-[#F3F6FA] text-[#0F172A]">
       <Navbar
         activeTab={activeTab}
         onSelectTab={setActiveTab}
@@ -1347,13 +1347,13 @@ export default function App() {
         {syncWarning && (
           <div
             role="status"
-            className="p-3.5 rounded-xl bg-slate-100 border border-slate-300 text-xs text-slate-800 flex items-center justify-between gap-3"
+            className="p-3.5 rounded-xl bg-[#F8FAFC] border border-[#DCE4EE] text-xs text-[#334155] flex items-center justify-between gap-3"
           >
             <span>{syncWarning}</span>
             <button
               type="button"
               onClick={() => setSyncWarning(null)}
-              className="text-xs font-semibold text-slate-900 underline shrink-0"
+              className="text-xs font-semibold text-[#155EEF] hover:text-[#114AC4] underline shrink-0"
             >
               Dismiss
             </button>
@@ -1656,12 +1656,12 @@ export default function App() {
         )}
       </main>
 
-      <footer className="border-t border-slate-200 bg-white mt-12">
-        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-slate-500">
-          <div>
+      <footer className="border-t border-[#DCE4EE] bg-white mt-12">
+        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-[#64748B]">
+          <div className="font-medium text-[#334155]">
             VitaGuard AI — Intelligent Personal Safety and Risk Assistant (Wearable & Environmental Data Integration)
           </div>
-          <div>
+          <div className="font-mono text-[11px] text-[#64748B]">
             Provenance-Isolated Telemetry · Rule Engine {RULE_ENGINE_VERSION} · Live SMS Disabled By Default
           </div>
         </div>

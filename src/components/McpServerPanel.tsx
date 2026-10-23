@@ -149,34 +149,34 @@ export const McpServerPanel: React.FC<McpServerPanelProps> = ({
   return (
     <section
       aria-label="VitaGuard Model Context Protocol Server Console"
-      className="bg-slate-900/90 border border-slate-800 rounded-xl p-4 sm:p-5 space-y-4"
+      className="vg-card p-5 sm:p-6 space-y-5"
     >
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-slate-800 pb-3">
-        <div className="flex items-center gap-2.5">
-          <div className="p-2 rounded-lg bg-indigo-500/10 border border-indigo-500/30 text-indigo-400">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-[#DCE4EE] pb-4">
+        <div className="flex items-start sm:items-center gap-3">
+          <div className="p-2.5 rounded-lg bg-[#EFF5FF] border border-[#C2D8FF] text-[#155EEF] shrink-0">
             <Terminal className="w-4 h-4" />
           </div>
           <div>
             <div className="flex items-center gap-2 flex-wrap">
-              <h3 className="text-sm font-semibold text-slate-100">
+              <h3 className="text-base font-bold text-[#0C192C]">
                 VitaGuard MCP Server Integration
               </h3>
-              <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-indigo-500/15 text-indigo-300 border border-indigo-500/30">
+              <span className="text-[11px] font-mono font-semibold px-2 py-0.5 rounded bg-[#EFF5FF] text-[#1042A8] border border-[#C2D8FF]">
                 MCP {MCP_PROTOCOL_VERSION}
               </span>
-              <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
+              <span className="text-[11px] font-mono font-semibold px-2 py-0.5 rounded bg-[#ECFDF5] text-[#065F46] border border-[#A7F3D0]">
                 AUTH UID: {actingUid}
               </span>
             </div>
-            <p className="text-xs text-slate-400 mt-0.5">
-              Server: <span className="font-mono text-slate-300">{VITAGUARD_MCP_SERVER_NAME}@{VITAGUARD_MCP_SERVER_VERSION}</span> • JSON-RPC 2.0 (`/api/mcp/rpc`, `mcp-stdio-server.ts`) • Sensitive tools enforce two-step human confirmation
+            <p className="text-xs text-[#5E738B] mt-0.5">
+              Server: <span className="font-mono text-[#0C192C] font-medium">{VITAGUARD_MCP_SERVER_NAME}@{VITAGUARD_MCP_SERVER_VERSION}</span> • JSON-RPC 2.0 (`/api/mcp/rpc`, `mcp-stdio-server.ts`) • Sensitive tools enforce two-step human confirmation
             </p>
           </div>
         </div>
       </div>
 
       {/* Tool Selector Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         {VITAGUARD_MCP_TOOLS.map((tool) => {
           const isSelected = tool.name === selectedTool;
           const isSensitive = tool.requiresConfirmation;
@@ -189,29 +189,29 @@ export const McpServerPanel: React.FC<McpServerPanelProps> = ({
                 setPendingToken(null);
                 setErrorMessage(null);
               }}
-              className={`text-left p-3 rounded-lg border transition-all ${
+              className={`text-left p-3.5 rounded-lg border transition-all ${
                 isSelected
-                  ? 'bg-slate-800/90 border-indigo-500/60 ring-1 ring-indigo-500/40'
-                  : 'bg-slate-950/60 border-slate-800/80 hover:border-slate-700'
+                  ? 'bg-[#EFF5FF]/80 border-[#155EEF] ring-1 ring-[#155EEF]/30'
+                  : 'bg-[#F7F9FC] border-[#DCE4EE] hover:border-[#9FB2CA] hover:bg-white'
               }`}
             >
-              <div className="flex items-center justify-between gap-1.5 mb-1">
-                <span className="text-xs font-mono font-semibold text-slate-100 truncate">
+              <div className="flex items-center justify-between gap-1.5 mb-1.5">
+                <span className="text-xs font-mono font-bold text-[#0C192C] truncate">
                   {tool.name}
                 </span>
                 {isSensitive ? (
-                  <span className="inline-flex items-center gap-1 text-[10px] font-mono px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-300 border border-amber-500/30 shrink-0">
+                  <span className="inline-flex items-center gap-1 text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-[#FFFBEB] text-[#92400E] border border-[#FDE68A] shrink-0">
                     <Lock className="w-2.5 h-2.5" />
                     CONFIRM REQ
                   </span>
                 ) : (
-                  <span className="inline-flex items-center gap-1 text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 shrink-0">
+                  <span className="inline-flex items-center gap-1 text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-[#ECFDF5] text-[#065F46] border border-[#A7F3D0] shrink-0">
                     <ShieldCheck className="w-2.5 h-2.5" />
                     READ-ONLY
                   </span>
                 )}
               </div>
-              <p className="text-[11px] text-slate-400 line-clamp-2">
+              <p className="text-[11px] text-[#334760] line-clamp-2 leading-relaxed">
                 {tool.description}
               </p>
             </button>
@@ -220,19 +220,19 @@ export const McpServerPanel: React.FC<McpServerPanelProps> = ({
       </div>
 
       {/* Action Bar & Human-in-the-Loop Confirmation Gate */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-950/80 border border-slate-800 rounded-lg p-3">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 vg-well p-3.5">
         <div className="space-y-0.5">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-mono text-indigo-300">
+            <span className="text-xs font-mono font-bold text-[#155EEF]">
               tools/call → {selectedToolDef.name}
             </span>
             {selectedToolDef.requiresConfirmation && (
-              <span className="text-[11px] text-amber-300 font-medium">
+              <span className="text-[11px] text-[#92400E] font-semibold">
                 (Requires Confirmation Token)
               </span>
             )}
           </div>
-          <p className="text-xs text-slate-400">{selectedToolDef.description}</p>
+          <p className="text-xs text-[#334760]">{selectedToolDef.description}</p>
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
@@ -240,7 +240,7 @@ export const McpServerPanel: React.FC<McpServerPanelProps> = ({
             type="button"
             disabled={isExecuting}
             onClick={() => syncContextAndInvoke(undefined)}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-indigo-600 hover:bg-indigo-500 text-white transition-colors cursor-pointer disabled:opacity-50"
+            className="vg-btn-primary inline-flex items-center gap-1.5 px-3.5 py-2 text-xs cursor-pointer disabled:opacity-50"
           >
             <Play className="w-3.5 h-3.5" />
             {selectedToolDef.requiresConfirmation
@@ -253,7 +253,7 @@ export const McpServerPanel: React.FC<McpServerPanelProps> = ({
               type="button"
               disabled={isExecuting}
               onClick={() => syncContextAndInvoke(pendingToken)}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-amber-500 hover:bg-amber-400 text-slate-950 transition-colors cursor-pointer"
+              className="vg-btn-safe inline-flex items-center gap-1.5 px-3.5 py-2 text-xs cursor-pointer"
             >
               <KeyRound className="w-3.5 h-3.5" />
               2. Confirm & Execute
@@ -265,9 +265,9 @@ export const McpServerPanel: React.FC<McpServerPanelProps> = ({
       {/* Pending Confirmation Banner */}
       {lastResult?.status === 'CONFIRMATION_REQUIRED' &&
         lastResult.confirmationChallenge && (
-          <div className="bg-amber-950/40 border border-amber-500/40 rounded-lg p-3.5 space-y-2">
+          <div className="bg-[#FFFBEB] border border-[#FDE68A] rounded-lg p-4 space-y-2">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 text-amber-300 text-xs font-semibold">
+              <div className="flex items-center gap-2 text-[#92400E] text-xs font-bold">
                 <ShieldAlert className="w-4 h-4 shrink-0" />
                 <span>
                   Human-in-the-Loop Confirmation Required Before Executing{' '}
@@ -277,19 +277,19 @@ export const McpServerPanel: React.FC<McpServerPanelProps> = ({
               <button
                 type="button"
                 onClick={() => setPendingToken(null)}
-                className="inline-flex items-center gap-1 text-xs text-slate-400 hover:text-slate-200"
+                className="inline-flex items-center gap-1 text-xs font-semibold text-[#92400E] hover:text-[#0C192C]"
               >
                 <XCircle className="w-3.5 h-3.5" />
                 Cancel
               </button>
             </div>
-            <p className="text-xs text-amber-200/90">
+            <p className="text-xs text-[#92400E]">
               {lastResult.confirmationChallenge.actionSummary}
             </p>
-            <p className="text-[11px] text-amber-300/80">
+            <p className="text-[11px] text-[#92400E]/90">
               {lastResult.confirmationChallenge.impactWarning}
             </p>
-            <div className="flex items-center gap-3 text-[11px] font-mono text-slate-300 pt-1">
+            <div className="flex items-center gap-3 text-[11px] font-mono text-[#334760] pt-1">
               <span>
                 Token: {lastResult.confirmationChallenge.confirmationToken}
               </span>
@@ -301,30 +301,30 @@ export const McpServerPanel: React.FC<McpServerPanelProps> = ({
         )}
 
       {errorMessage && (
-        <div className="bg-rose-950/40 border border-rose-500/40 rounded-lg p-3 text-xs text-rose-200 font-mono">
+        <div className="bg-[#FEF2F2] border border-[#FECACA] rounded-lg p-3 text-xs text-[#991B1B] font-mono">
           {errorMessage}
         </div>
       )}
 
       {/* Structured MCP Response Output */}
       {lastResult && (
-        <div className="bg-slate-950 border border-slate-800 rounded-lg p-3 space-y-2">
-          <div className="flex items-center justify-between text-xs">
-            <span className="font-mono text-slate-400">
+        <div className="bg-[#0D1F38] border border-[#1E3658] rounded-lg p-3.5 space-y-2 text-slate-100">
+          <div className="flex items-center justify-between text-xs border-b border-[#1E3658] pb-2">
+            <span className="font-mono text-slate-300">
               MCP Response ({lastResult.toolName})
             </span>
             <span
               className={`inline-flex items-center gap-1 font-mono text-[11px] px-2 py-0.5 rounded ${
                 lastResult.status === 'SUCCESS'
-                  ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30'
-                  : 'bg-amber-500/15 text-amber-300 border border-amber-500/30'
+                  ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                  : 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
               }`}
             >
               <CheckCircle2 className="w-3 h-3" />
               {lastResult.status} • {lastResult.dataMode}
             </span>
           </div>
-          <pre className="text-[11px] font-mono text-slate-300 overflow-x-auto max-h-56 leading-relaxed">
+          <pre className="text-[11px] font-mono text-slate-200 overflow-x-auto max-h-56 leading-relaxed">
             {JSON.stringify(lastResult.structuredOutput, null, 2)}
           </pre>
         </div>

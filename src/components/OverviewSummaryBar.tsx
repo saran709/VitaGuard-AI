@@ -23,27 +23,32 @@ const RISK_SUMMARY_CONFIG: Record<
     title: string;
     accentText: string;
     containerClass: string;
+    dividerClass: string;
   }
 > = {
   [RiskLevel.LOW]: {
     title: 'LOW RISK — NOMINAL SAFETY STATUS',
-    accentText: 'text-emerald-800',
-    containerClass: 'bg-white border-slate-200',
+    accentText: 'text-[#065F46]',
+    containerClass: 'bg-white border-[#DCE4EE] shadow-[0_1px_2px_rgba(12,25,44,0.03)]',
+    dividerClass: 'border-[#E3EAF2]',
   },
   [RiskLevel.MODERATE]: {
     title: 'MODERATE RISK — ELEVATED ADVISORY',
-    accentText: 'text-amber-800',
-    containerClass: 'bg-amber-50/40 border-amber-200',
+    accentText: 'text-[#92400E]',
+    containerClass: 'bg-[#FFFBEB] border-[#FDE68A] shadow-[0_1px_2px_rgba(146,64,14,0.04)]',
+    dividerClass: 'border-[#FDE68A]/80',
   },
   [RiskLevel.HIGH]: {
     title: 'HIGH RISK — SAFETY CHECK-IN REQUIRED',
-    accentText: 'text-orange-800',
-    containerClass: 'bg-orange-50/50 border-orange-200',
+    accentText: 'text-[#9A3412]',
+    containerClass: 'bg-[#FFF7ED] border-[#FDBA74] shadow-[0_1px_3px_rgba(154,52,18,0.05)]',
+    dividerClass: 'border-[#FED7AA]',
   },
   [RiskLevel.CRITICAL]: {
     title: 'CRITICAL RISK — IMMEDIATE ACTION & CHECK-IN REQUIRED',
-    accentText: 'text-red-800',
-    containerClass: 'bg-red-50/60 border-red-200',
+    accentText: 'text-[#991B1B]',
+    containerClass: 'bg-[#FEF2F2] border-[#FECACA] shadow-[0_1px_3px_rgba(153,27,27,0.06)]',
+    dividerClass: 'border-[#FECACA]',
   },
 };
 
@@ -60,11 +65,11 @@ export const OverviewSummaryBar: React.FC<OverviewSummaryBarProps> = ({
   return (
     <section
       aria-label="Safety Status Summary"
-      className={`border rounded-xl p-6 space-y-5 ${cfg.containerClass}`}
+      className={`border rounded-xl p-6 space-y-5 transition-colors ${cfg.containerClass}`}
     >
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
         <div className="space-y-1.5 max-w-3xl">
-          <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500 font-mono tabular-nums">
+          <div className="flex flex-wrap items-center gap-2 text-xs text-[#5E738B] font-mono tabular-nums">
             <span>Overall Risk Level: {assessment.riskLevel.toUpperCase()}</span>
             <span aria-hidden="true">·</span>
             <span>Composite Score: {assessment.overallScore}/100</span>
@@ -81,18 +86,18 @@ export const OverviewSummaryBar: React.FC<OverviewSummaryBarProps> = ({
 
           <div className="flex items-center gap-2.5">
             {assessment.riskLevel === RiskLevel.LOW ? (
-              <CheckCircle2 className="w-6 h-6 text-emerald-700 shrink-0" aria-hidden="true" />
+              <CheckCircle2 className="w-6 h-6 text-[#059669] shrink-0" aria-hidden="true" />
             ) : assessment.riskLevel === RiskLevel.CRITICAL ? (
-              <ShieldAlert className="w-6 h-6 text-red-700 shrink-0" aria-hidden="true" />
+              <ShieldAlert className="w-6 h-6 text-[#DC2626] shrink-0" aria-hidden="true" />
             ) : (
-              <AlertTriangle className="w-6 h-6 text-amber-700 shrink-0" aria-hidden="true" />
+              <AlertTriangle className="w-6 h-6 text-[#D97706] shrink-0" aria-hidden="true" />
             )}
             <h1 className={`text-xl sm:text-2xl font-bold tracking-tight ${cfg.accentText}`}>
               {cfg.title}
             </h1>
           </div>
 
-          <p className="text-sm text-slate-700 leading-relaxed">
+          <p className="text-sm text-[#334760] leading-relaxed">
             {assessment.primaryConcern}
           </p>
         </div>
@@ -101,9 +106,9 @@ export const OverviewSummaryBar: React.FC<OverviewSummaryBarProps> = ({
         <div className="flex flex-col sm:flex-row lg:flex-col items-stretch sm:items-center lg:items-end justify-between gap-3 shrink-0">
           {hasUnacknowledged ? (
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
-              <div className="text-xs text-slate-700 sm:text-right">
-                <div className="font-semibold text-slate-900">Active Check-In Pending</div>
-                <div className="font-mono tabular-nums text-slate-500">
+              <div className="text-xs text-[#334760] sm:text-right">
+                <div className="font-semibold text-[#0C192C]">Active Check-In Pending</div>
+                <div className="font-mono tabular-nums text-[#5E738B]">
                   Unacknowledged for {activeAlert?.secondsSinceTriggered ?? 0}s
                 </div>
               </div>
@@ -112,20 +117,20 @@ export const OverviewSummaryBar: React.FC<OverviewSummaryBarProps> = ({
                 onClick={() =>
                   onAcknowledgeSafe('Confirmed "I am safe" from Overview Status Bar.')
                 }
-                className="px-5 py-2.5 text-xs font-semibold text-white bg-emerald-700 rounded-lg hover:bg-emerald-800 transition-colors whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700"
+                className="vg-btn-safe px-5 py-2.5 text-xs whitespace-nowrap shrink-0"
               >
                 I am safe
               </button>
             </div>
           ) : activeAlert?.acknowledged ? (
-            <div className="text-xs text-emerald-800 font-medium">
+            <div className="text-xs text-[#065F46] font-semibold">
               Alert acknowledged ("I am safe") at{' '}
               <span className="font-mono tabular-nums">
                 {new Date(activeAlert.acknowledgedAt!).toLocaleTimeString()}
               </span>
             </div>
           ) : (
-            <div className="text-xs text-slate-500 font-mono">
+            <div className="text-xs text-[#5E738B] font-mono">
               Status: Passive Safety Monitoring Active
             </div>
           )}
@@ -133,8 +138,8 @@ export const OverviewSummaryBar: React.FC<OverviewSummaryBarProps> = ({
       </div>
 
       {/* Quick Scenario Switcher Bar for Instant Testing */}
-      <div className="pt-4 border-t border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <span className="text-xs font-medium text-slate-600 shrink-0">
+      <div className={`pt-4 border-t ${cfg.dividerClass} flex flex-col sm:flex-row sm:items-center justify-between gap-3`}>
+        <span className="text-xs font-semibold text-[#334760] shrink-0">
           Test Simulated Scenarios:
         </span>
         <div className="flex flex-wrap items-center gap-1.5">
@@ -145,10 +150,10 @@ export const OverviewSummaryBar: React.FC<OverviewSummaryBarProps> = ({
                 key={preset.id}
                 type="button"
                 onClick={() => onApplyPreset(preset)}
-                className={`px-3 py-1.5 text-xs font-medium rounded-lg border transition-colors whitespace-nowrap shrink-0 ${
+                className={`px-3 py-1.5 text-xs font-semibold rounded-lg border transition-colors whitespace-nowrap shrink-0 ${
                   active
-                    ? 'bg-slate-900 text-white border-slate-900'
-                    : 'bg-white text-slate-700 border-slate-200 hover:border-slate-300 hover:bg-slate-50'
+                    ? 'bg-[#155EEF] text-white border-[#155EEF] shadow-2xs'
+                    : 'bg-white text-[#334760] border-[#DCE4EE] hover:border-[#9FB2CA] hover:bg-[#F7F9FC] hover:text-[#0C192C]'
                 }`}
               >
                 {preset.name} ({preset.expectedRisk.toUpperCase()})

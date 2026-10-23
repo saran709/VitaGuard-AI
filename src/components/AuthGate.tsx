@@ -27,12 +27,12 @@ export const AuthGate: React.FC<{ children: React.ReactNode }> = ({ children }) 
 
   if (routeAccess.reason === 'loading') {
     return (
-      <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center p-6">
-        <div className="bg-white border border-slate-200 rounded-xl p-8 max-w-md w-full text-center space-y-3">
-          <div className="text-base font-bold text-slate-900">
+      <div className="min-h-screen bg-[#F3F6FA] flex items-center justify-center p-6">
+        <div className="vg-card p-8 max-w-md w-full text-center space-y-3">
+          <div className="text-base font-bold text-[#0F172A]">
             VitaGuard AI — Initializing Security Context
           </div>
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-[#64748B]">
             Verifying Firebase Authentication session and Firestore rules connection...
           </p>
         </div>
@@ -68,14 +68,14 @@ export const AuthGate: React.FC<{ children: React.ReactNode }> = ({ children }) 
   // Protected Route Gate: When logged out (user === null), require authentication to access the dashboard
   if (!routeAccess.allowed) {
     return (
-      <div className="min-h-screen bg-[#F8FAFC] flex flex-col justify-between">
+      <div className="min-h-screen bg-[#F3F6FA] flex flex-col justify-between">
         {/* Simulation Mode Banner */}
-        <div className="bg-amber-50 border-b border-amber-200 px-6 py-2.5">
-          <div className="max-w-[1440px] mx-auto flex items-center justify-between gap-2 text-xs text-amber-950">
+        <div className="bg-[#0D1F38] border-b border-[#1E3A5F] px-6 py-2.5">
+          <div className="max-w-[1440px] mx-auto flex items-center justify-between gap-2 text-xs text-[#E2E8F0]">
             <div className="flex items-center gap-2">
-              <ShieldAlert className="w-4 h-4 text-amber-700 shrink-0" aria-hidden="true" />
-              <span className="font-bold">SIMULATION MODE</span>
-              <span aria-hidden="true">·</span>
+              <ShieldAlert className="w-4 h-4 text-[#FBBF24] shrink-0" aria-hidden="true" />
+              <span className="font-bold text-[#FBBF24]">SIMULATION MODE</span>
+              <span className="text-[#475569]" aria-hidden="true">·</span>
               <span>
                 VitaGuard AI — Protected Route & Isolated User Storage (`vitaguard-ai-65bbb`)
               </span>
@@ -84,22 +84,22 @@ export const AuthGate: React.FC<{ children: React.ReactNode }> = ({ children }) 
         </div>
 
         <div className="flex-1 flex items-center justify-center p-6">
-          <div className="bg-white border border-slate-200 rounded-xl p-6 sm:p-8 max-w-md w-full space-y-6">
+          <div className="vg-card p-6 sm:p-8 max-w-md w-full space-y-6">
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-mono text-slate-500">
+                <span className="text-xs font-mono text-[#64748B]">
                   Protected Safety Workspace
                 </span>
-                <Lock className="w-4 h-4 text-slate-700" aria-hidden="true" />
+                <Lock className="w-4 h-4 text-[#155EEF]" aria-hidden="true" />
               </div>
-              <h1 className="text-xl font-bold text-slate-900">
+              <h1 className="text-xl font-bold text-[#0F172A]">
                 {mode === 'login'
                   ? 'Sign In to VitaGuard AI'
                   : mode === 'register'
                   ? 'Create VitaGuard AI Account'
                   : 'Reset Account Password'}
               </h1>
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-[#64748B]">
                 {mode === 'login'
                   ? 'Sign in with your Email and Password to load your isolated risk assessments, alert history, settings, and emergency contacts.'
                   : mode === 'register'
@@ -109,14 +109,14 @@ export const AuthGate: React.FC<{ children: React.ReactNode }> = ({ children }) 
             </div>
 
             {/* Mode Switcher Tabs */}
-            <div className="grid grid-cols-3 gap-1 p-1 bg-slate-100 rounded-lg text-xs font-medium">
+            <div className="grid grid-cols-3 gap-1 p-1 bg-[#F1F5F9] border border-[#E2E8F0] rounded-lg text-xs font-medium">
               <button
                 type="button"
                 onClick={() => switchMode('login')}
                 className={`py-2 rounded-md transition-colors ${
                   mode === 'login'
-                    ? 'bg-white text-slate-900 shadow-xs font-semibold'
-                    : 'text-slate-600 hover:text-slate-900'
+                    ? 'bg-white text-[#155EEF] shadow-xs font-semibold border border-[#DCE4EE]'
+                    : 'text-[#475569] hover:text-[#0F172A]'
                 }`}
               >
                 Sign In
@@ -126,8 +126,8 @@ export const AuthGate: React.FC<{ children: React.ReactNode }> = ({ children }) 
                 onClick={() => switchMode('register')}
                 className={`py-2 rounded-md transition-colors ${
                   mode === 'register'
-                    ? 'bg-white text-slate-900 shadow-xs font-semibold'
-                    : 'text-slate-600 hover:text-slate-900'
+                    ? 'bg-white text-[#155EEF] shadow-xs font-semibold border border-[#DCE4EE]'
+                    : 'text-[#475569] hover:text-[#0F172A]'
                 }`}
               >
                 Register
@@ -137,8 +137,8 @@ export const AuthGate: React.FC<{ children: React.ReactNode }> = ({ children }) 
                 onClick={() => switchMode('reset')}
                 className={`py-2 rounded-md transition-colors ${
                   mode === 'reset'
-                    ? 'bg-white text-slate-900 shadow-xs font-semibold'
-                    : 'text-slate-600 hover:text-slate-900'
+                    ? 'bg-white text-[#155EEF] shadow-xs font-semibold border border-[#DCE4EE]'
+                    : 'text-[#475569] hover:text-[#0F172A]'
                 }`}
               >
                 Reset Password
@@ -148,7 +148,7 @@ export const AuthGate: React.FC<{ children: React.ReactNode }> = ({ children }) 
             {authError && (
               <div
                 role="alert"
-                className="p-3.5 rounded-lg bg-red-50 border border-red-200 text-xs text-red-800 space-y-1"
+                className="p-3.5 rounded-lg bg-[#FEF2F2] border border-[#FECACA] text-xs text-[#991B1B] space-y-1"
               >
                 <div className="font-semibold">Authentication Notice</div>
                 <div>{authError}</div>
@@ -158,7 +158,7 @@ export const AuthGate: React.FC<{ children: React.ReactNode }> = ({ children }) 
             {resetSuccess && (
               <div
                 role="status"
-                className="p-3.5 rounded-lg bg-emerald-50 border border-emerald-200 text-xs text-emerald-800"
+                className="p-3.5 rounded-lg bg-[#ECFDF5] border border-[#A7F3D0] text-xs text-[#065F46]"
               >
                 {resetSuccess}
               </div>
@@ -169,7 +169,7 @@ export const AuthGate: React.FC<{ children: React.ReactNode }> = ({ children }) 
                 <div>
                   <label
                     htmlFor="auth-display-name"
-                    className="block text-xs font-medium text-slate-700 mb-1"
+                    className="block text-xs font-medium text-[#334155] mb-1"
                   >
                     Display Name
                   </label>
@@ -180,7 +180,7 @@ export const AuthGate: React.FC<{ children: React.ReactNode }> = ({ children }) 
                     value={displayName}
                     onChange={(e) => setDisplayName(e.target.value)}
                     placeholder="Dr. Sarah Chen"
-                    className="w-full rounded-lg border border-slate-300 px-3 py-2 text-xs text-slate-900"
+                    className="w-full rounded-lg border border-[#CBD5E1] px-3 py-2 text-xs text-[#0F172A] bg-white focus:border-[#155EEF]"
                   />
                 </div>
               )}
@@ -188,7 +188,7 @@ export const AuthGate: React.FC<{ children: React.ReactNode }> = ({ children }) 
               <div>
                 <label
                   htmlFor="auth-email"
-                  className="block text-xs font-medium text-slate-700 mb-1"
+                  className="block text-xs font-medium text-[#334155] mb-1"
                 >
                   Email Address
                 </label>
@@ -199,7 +199,7 @@ export const AuthGate: React.FC<{ children: React.ReactNode }> = ({ children }) 
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="operator@example.com"
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-xs text-slate-900"
+                  className="w-full rounded-lg border border-[#CBD5E1] px-3 py-2 text-xs text-[#0F172A] bg-white focus:border-[#155EEF]"
                 />
               </div>
 
@@ -207,7 +207,7 @@ export const AuthGate: React.FC<{ children: React.ReactNode }> = ({ children }) 
                 <div>
                   <label
                     htmlFor="auth-password"
-                    className="block text-xs font-medium text-slate-700 mb-1"
+                    className="block text-xs font-medium text-[#334155] mb-1"
                   >
                     Password
                   </label>
@@ -219,7 +219,7 @@ export const AuthGate: React.FC<{ children: React.ReactNode }> = ({ children }) 
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="At least 6 characters"
-                    className="w-full rounded-lg border border-slate-300 px-3 py-2 text-xs text-slate-900"
+                    className="w-full rounded-lg border border-[#CBD5E1] px-3 py-2 text-xs text-[#0F172A] bg-white focus:border-[#155EEF]"
                   />
                 </div>
               )}
@@ -227,7 +227,7 @@ export const AuthGate: React.FC<{ children: React.ReactNode }> = ({ children }) 
               <button
                 type="submit"
                 disabled={authLoading}
-                className="w-full py-2.5 px-4 text-xs font-semibold text-white bg-slate-900 rounded-lg hover:bg-slate-800 disabled:opacity-50 transition-colors inline-flex items-center justify-center gap-2"
+                className="vg-btn-primary w-full py-2.5 px-4 text-xs font-semibold text-white rounded-lg inline-flex items-center justify-center gap-2"
               >
                 {mode === 'login' ? (
                   <>
@@ -248,15 +248,15 @@ export const AuthGate: React.FC<{ children: React.ReactNode }> = ({ children }) 
               </button>
             </form>
 
-            <div className="pt-4 border-t border-slate-200 space-y-2.5">
+            <div className="pt-4 border-t border-[#E2E8F0] space-y-2.5">
               <button
                 type="button"
                 onClick={() => signInLocalSandbox('operator@vitaguard.demo')}
-                className="w-full py-2 px-4 text-xs font-medium text-slate-700 bg-slate-100 rounded-lg hover:bg-slate-200 transition-colors"
+                className="vg-btn-secondary w-full py-2 px-4 text-xs font-semibold rounded-lg"
               >
                 Quick Sign In as Default Operator (`operator@vitaguard.demo`)
               </button>
-              <p className="text-[11px] text-slate-500 text-center">
+              <p className="text-[11px] text-[#64748B] text-center">
                 All user records are strictly isolated per UID (`users/&#123;uid&#125;`).
               </p>
             </div>

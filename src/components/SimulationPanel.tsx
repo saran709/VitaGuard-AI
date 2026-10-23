@@ -23,10 +23,10 @@ interface SimulationPanelProps {
 }
 
 const SEVERITY_TEXT_STYLES: Record<RiskLevel, string> = {
-  [RiskLevel.LOW]: 'text-emerald-700',
-  [RiskLevel.MODERATE]: 'text-amber-700',
-  [RiskLevel.HIGH]: 'text-orange-700',
-  [RiskLevel.CRITICAL]: 'text-red-700',
+  [RiskLevel.LOW]: 'text-[#065F46]',
+  [RiskLevel.MODERATE]: 'text-[#92400E]',
+  [RiskLevel.HIGH]: 'text-[#9A3412]',
+  [RiskLevel.CRITICAL]: 'text-[#991B1B]',
 };
 
 export const SimulationPanel: React.FC<SimulationPanelProps> = ({
@@ -72,18 +72,18 @@ export const SimulationPanel: React.FC<SimulationPanelProps> = ({
   return (
     <section
       aria-labelledby="simulation-panel-heading"
-      className="bg-white border border-slate-200 rounded-xl p-6 space-y-6"
+      className="vg-card p-6 space-y-6"
     >
       {/* Header & Controls */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-slate-200">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-[#DCE4EE]">
         <div>
           <div className="flex items-center gap-2">
-            <Sliders className="w-4 h-4 text-slate-700" aria-hidden="true" />
-            <h2 id="simulation-panel-heading" className="text-lg font-semibold text-slate-900">
+            <Sliders className="w-4 h-4 text-[#155EEF]" aria-hidden="true" />
+            <h2 id="simulation-panel-heading" className="text-lg font-semibold text-[#0C192C]">
               Live Telemetry & Environmental Simulator
             </h2>
           </div>
-          <p className="text-xs text-slate-500 mt-1">
+          <p className="text-xs text-[#5E738B] mt-1">
             Adjust physiological sensors and ambient weather conditions in real time to test rule-based risk classification and alert escalation.
           </p>
         </div>
@@ -92,10 +92,10 @@ export const SimulationPanel: React.FC<SimulationPanelProps> = ({
           <button
             type="button"
             onClick={onToggleAutoDrift}
-            className={`px-3.5 py-2 text-xs font-medium rounded-lg border transition-colors inline-flex items-center gap-1.5 whitespace-nowrap shrink-0 ${
+            className={`px-3.5 py-2 text-xs font-semibold rounded-lg border transition-colors inline-flex items-center gap-1.5 whitespace-nowrap shrink-0 ${
               autoDriftEnabled
-                ? 'bg-slate-900 text-white border-slate-900'
-                : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'
+                ? 'bg-[#155EEF] text-white border-[#155EEF]'
+                : 'vg-btn-secondary'
             }`}
           >
             {autoDriftEnabled ? (
@@ -114,7 +114,7 @@ export const SimulationPanel: React.FC<SimulationPanelProps> = ({
           <button
             type="button"
             onClick={onResetNominal}
-            className="px-3.5 py-2 text-xs font-medium text-slate-700 bg-slate-100 rounded-lg hover:bg-slate-200 transition-colors inline-flex items-center gap-1.5 whitespace-nowrap shrink-0"
+            className="vg-btn-secondary px-3.5 py-2 text-xs inline-flex items-center gap-1.5 whitespace-nowrap shrink-0"
           >
             <RotateCcw className="w-3.5 h-3.5" aria-hidden="true" />
             <span>Reset to Baseline</span>
@@ -124,7 +124,7 @@ export const SimulationPanel: React.FC<SimulationPanelProps> = ({
 
       {/* Scenario Presets */}
       <div className="space-y-2.5">
-        <div className="text-xs font-semibold text-slate-700">
+        <div className="text-xs font-semibold text-[#334760]">
           Quick Scenario Presets
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2.5">
@@ -135,23 +135,23 @@ export const SimulationPanel: React.FC<SimulationPanelProps> = ({
                 key={preset.id}
                 type="button"
                 onClick={() => onApplyPreset(preset)}
-                className={`text-left p-3 rounded-lg border transition-colors flex flex-col justify-between ${
+                className={`text-left p-3.5 rounded-lg border transition-colors flex flex-col justify-between ${
                   isSelected
-                    ? 'border-slate-900 bg-slate-50'
-                    : 'border-slate-200 hover:border-slate-300 bg-white'
+                    ? 'border-[#155EEF] bg-[#EFF5FF]/80 ring-1 ring-[#155EEF]/30'
+                    : 'border-[#DCE4EE] hover:border-[#9FB2CA] bg-white hover:bg-[#F7F9FC]'
                 }`}
               >
                 <div>
-                  <div className="text-xs font-semibold text-slate-900 leading-snug">
+                  <div className="text-xs font-bold text-[#0C192C] leading-snug">
                     {preset.name}
                   </div>
-                  <p className="text-[11px] text-slate-500 mt-1 line-clamp-2">
+                  <p className="text-[11px] text-[#334760] mt-1 line-clamp-2">
                     {preset.subtitle}
                   </p>
                 </div>
-                <div className="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px]">
-                  <span className="text-slate-500">Target:</span>
-                  <span className={`font-semibold uppercase ${SEVERITY_TEXT_STYLES[preset.expectedRisk]}`}>
+                <div className="mt-2.5 pt-2 border-t border-[#E3EAF2] flex items-center justify-between text-[11px]">
+                  <span className="text-[#5E738B] font-mono">Target:</span>
+                  <span className={`font-bold font-mono uppercase ${SEVERITY_TEXT_STYLES[preset.expectedRisk]}`}>
                     {preset.expectedRisk}
                   </span>
                 </div>
@@ -164,7 +164,7 @@ export const SimulationPanel: React.FC<SimulationPanelProps> = ({
       {validationMessage && (
         <div
           role="alert"
-          className="p-3 rounded-lg bg-amber-50 border border-amber-200 text-xs text-amber-900"
+          className="p-3 rounded-lg bg-[#FFFBEB] border border-[#FDE68A] text-xs text-[#92400E]"
         >
           {validationMessage}
         </div>
@@ -174,17 +174,17 @@ export const SimulationPanel: React.FC<SimulationPanelProps> = ({
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 pt-2">
         {/* Left Column: Physiological Controls */}
         <div className="space-y-5">
-          <h3 className="text-sm font-semibold text-slate-900 pb-2 border-b border-slate-100">
+          <h3 className="text-sm font-semibold text-[#0C192C] pb-2 border-b border-[#E3EAF2]">
             1. Simulated Physiological Inputs
           </h3>
 
           {/* Heart Rate Slider */}
           <div className="space-y-1.5">
             <div className="flex items-center justify-between text-xs">
-              <label htmlFor="sim-hr" className="font-medium text-slate-700">
+              <label htmlFor="sim-hr" className="font-medium text-[#334760]">
                 Heart Rate (BPM)
               </label>
-              <span className="font-mono tabular-nums font-semibold text-slate-900">
+              <span className="font-mono tabular-nums font-bold text-[#0C192C]">
                 {vitals.heartRateBpm} BPM
               </span>
             </div>
@@ -196,9 +196,9 @@ export const SimulationPanel: React.FC<SimulationPanelProps> = ({
               step={1}
               value={vitals.heartRateBpm}
               onChange={(e) => handleVitalChange('heartRateBpm', Number(e.target.value))}
-              className="w-full accent-slate-900 cursor-pointer"
+              className="w-full cursor-pointer"
             />
-            <div className="flex justify-between text-[11px] text-slate-400 font-mono tabular-nums">
+            <div className="flex justify-between text-[11px] text-[#5E738B] font-mono tabular-nums">
               <span>35 BPM (Bradycardia)</span>
               <span>75 BPM (Rest)</span>
               <span>200 BPM (Max)</span>
@@ -208,10 +208,10 @@ export const SimulationPanel: React.FC<SimulationPanelProps> = ({
           {/* Oxygen Saturation Slider */}
           <div className="space-y-1.5">
             <div className="flex items-center justify-between text-xs">
-              <label htmlFor="sim-spo2" className="font-medium text-slate-700">
+              <label htmlFor="sim-spo2" className="font-medium text-[#334760]">
                 Oxygen Saturation — SpO2 (%)
               </label>
-              <span className="font-mono tabular-nums font-semibold text-slate-900">
+              <span className="font-mono tabular-nums font-bold text-[#0C192C]">
                 {vitals.oxygenSaturationPct}%
               </span>
             </div>
@@ -223,9 +223,9 @@ export const SimulationPanel: React.FC<SimulationPanelProps> = ({
               step={1}
               value={vitals.oxygenSaturationPct}
               onChange={(e) => handleVitalChange('oxygenSaturationPct', Number(e.target.value))}
-              className="w-full accent-slate-900 cursor-pointer"
+              className="w-full cursor-pointer"
             />
-            <div className="flex justify-between text-[11px] text-slate-400 font-mono tabular-nums">
+            <div className="flex justify-between text-[11px] text-[#5E738B] font-mono tabular-nums">
               <span>80% (Severe Hypoxia)</span>
               <span>92% (Mod)</span>
               <span>100% (Nominal)</span>
@@ -235,10 +235,10 @@ export const SimulationPanel: React.FC<SimulationPanelProps> = ({
           {/* Core Body Temperature Slider */}
           <div className="space-y-1.5">
             <div className="flex items-center justify-between text-xs">
-              <label htmlFor="sim-body-temp" className="font-medium text-slate-700">
+              <label htmlFor="sim-body-temp" className="font-medium text-[#334760]">
                 Core Body Temperature (°C)
               </label>
-              <span className="font-mono tabular-nums font-semibold text-slate-900">
+              <span className="font-mono tabular-nums font-bold text-[#0C192C]">
                 {vitals.bodyTempCelsius.toFixed(1)}°C
               </span>
             </div>
@@ -250,9 +250,9 @@ export const SimulationPanel: React.FC<SimulationPanelProps> = ({
               step={0.1}
               value={vitals.bodyTempCelsius}
               onChange={(e) => handleVitalChange('bodyTempCelsius', Number(e.target.value))}
-              className="w-full accent-slate-900 cursor-pointer"
+              className="w-full cursor-pointer"
             />
-            <div className="flex justify-between text-[11px] text-slate-400 font-mono tabular-nums">
+            <div className="flex justify-between text-[11px] text-[#5E738B] font-mono tabular-nums">
               <span>34.0°C (Hypothermia)</span>
               <span>37.0°C (Normal)</span>
               <span>41.0°C (Hyperthermia)</span>
@@ -262,7 +262,7 @@ export const SimulationPanel: React.FC<SimulationPanelProps> = ({
           {/* Activity Level Selector */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
             <div>
-              <label htmlFor="sim-activity" className="block text-xs font-medium text-slate-700 mb-1.5">
+              <label htmlFor="sim-activity" className="block text-xs font-medium text-[#334760] mb-1.5">
                 Activity State
               </label>
               <select
@@ -271,7 +271,7 @@ export const SimulationPanel: React.FC<SimulationPanelProps> = ({
                 onChange={(e) =>
                   handleVitalChange('activityLevel', e.target.value as ActivityLevel)
                 }
-                className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900"
+                className="w-full rounded-lg border border-[#C3D0E0] bg-white px-3 py-2 text-xs text-[#0C192C]"
               >
                 <option value={ActivityLevel.RESTING}>Resting / Sedentary</option>
                 <option value={ActivityLevel.LIGHT_WALKING}>Light Walking</option>
@@ -281,7 +281,7 @@ export const SimulationPanel: React.FC<SimulationPanelProps> = ({
             </div>
 
             <div>
-              <label htmlFor="sim-cadence" className="block text-xs font-medium text-slate-700 mb-1.5">
+              <label htmlFor="sim-cadence" className="block text-xs font-medium text-[#334760] mb-1.5">
                 Step Cadence (steps/min)
               </label>
               <input
@@ -294,7 +294,7 @@ export const SimulationPanel: React.FC<SimulationPanelProps> = ({
                   const val = Math.max(0, Math.min(220, Number(e.target.value) || 0));
                   handleVitalChange('stepCadencePerMin', val);
                 }}
-                className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-mono tabular-nums text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900"
+                className="w-full rounded-lg border border-[#C3D0E0] bg-white px-3 py-2 text-xs font-mono tabular-nums text-[#0C192C]"
               />
             </div>
           </div>
@@ -302,17 +302,17 @@ export const SimulationPanel: React.FC<SimulationPanelProps> = ({
 
         {/* Right Column: Environmental Controls */}
         <div className="space-y-5">
-          <h3 className="text-sm font-semibold text-slate-900 pb-2 border-b border-slate-100">
+          <h3 className="text-sm font-semibold text-[#0C192C] pb-2 border-b border-[#E3EAF2]">
             2. Simulated Environmental Inputs
           </h3>
 
           {/* Ambient Temperature Slider */}
           <div className="space-y-1.5">
             <div className="flex items-center justify-between text-xs">
-              <label htmlFor="sim-amb-temp" className="font-medium text-slate-700">
+              <label htmlFor="sim-amb-temp" className="font-medium text-[#334760]">
                 Ambient Temperature (°C)
               </label>
-              <span className="font-mono tabular-nums font-semibold text-slate-900">
+              <span className="font-mono tabular-nums font-bold text-[#0C192C]">
                 {environment.ambientTempCelsius}°C
               </span>
             </div>
@@ -324,9 +324,9 @@ export const SimulationPanel: React.FC<SimulationPanelProps> = ({
               step={1}
               value={environment.ambientTempCelsius}
               onChange={(e) => handleEnvChange('ambientTempCelsius', Number(e.target.value))}
-              className="w-full accent-slate-900 cursor-pointer"
+              className="w-full cursor-pointer"
             />
-            <div className="flex justify-between text-[11px] text-slate-400 font-mono tabular-nums">
+            <div className="flex justify-between text-[11px] text-[#5E738B] font-mono tabular-nums">
               <span>-15°C (Extreme Cold)</span>
               <span>22°C (Temperate)</span>
               <span>48°C (Extreme Heat)</span>
@@ -336,10 +336,10 @@ export const SimulationPanel: React.FC<SimulationPanelProps> = ({
           {/* Relative Humidity Slider */}
           <div className="space-y-1.5">
             <div className="flex items-center justify-between text-xs">
-              <label htmlFor="sim-humidity" className="font-medium text-slate-700">
+              <label htmlFor="sim-humidity" className="font-medium text-[#334760]">
                 Relative Humidity (%)
               </label>
-              <span className="font-mono tabular-nums font-semibold text-slate-900">
+              <span className="font-mono tabular-nums font-bold text-[#0C192C]">
                 {environment.humidityPct}%
               </span>
             </div>
@@ -351,9 +351,9 @@ export const SimulationPanel: React.FC<SimulationPanelProps> = ({
               step={1}
               value={environment.humidityPct}
               onChange={(e) => handleEnvChange('humidityPct', Number(e.target.value))}
-              className="w-full accent-slate-900 cursor-pointer"
+              className="w-full cursor-pointer"
             />
-            <div className="flex justify-between text-[11px] text-slate-400 font-mono tabular-nums">
+            <div className="flex justify-between text-[11px] text-[#5E738B] font-mono tabular-nums">
               <span>10% (Arid)</span>
               <span>50% (Balanced)</span>
               <span>100% (Saturated)</span>
@@ -363,10 +363,10 @@ export const SimulationPanel: React.FC<SimulationPanelProps> = ({
           {/* Wind Speed Slider */}
           <div className="space-y-1.5">
             <div className="flex items-center justify-between text-xs">
-              <label htmlFor="sim-wind" className="font-medium text-slate-700">
+              <label htmlFor="sim-wind" className="font-medium text-[#334760]">
                 Wind Speed (km/h)
               </label>
-              <span className="font-mono tabular-nums font-semibold text-slate-900">
+              <span className="font-mono tabular-nums font-bold text-[#0C192C]">
                 {environment.windSpeedKmh} km/h
               </span>
             </div>
@@ -378,9 +378,9 @@ export const SimulationPanel: React.FC<SimulationPanelProps> = ({
               step={1}
               value={environment.windSpeedKmh}
               onChange={(e) => handleEnvChange('windSpeedKmh', Number(e.target.value))}
-              className="w-full accent-slate-900 cursor-pointer"
+              className="w-full cursor-pointer"
             />
-            <div className="flex justify-between text-[11px] text-slate-400 font-mono tabular-nums">
+            <div className="flex justify-between text-[11px] text-[#5E738B] font-mono tabular-nums">
               <span>0 km/h (Calm)</span>
               <span>25 km/h (Breezy)</span>
               <span>75 km/h (Gale)</span>
@@ -390,7 +390,7 @@ export const SimulationPanel: React.FC<SimulationPanelProps> = ({
           {/* Weather Condition & AQI */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
             <div>
-              <label htmlFor="sim-weather" className="block text-xs font-medium text-slate-700 mb-1.5">
+              <label htmlFor="sim-weather" className="block text-xs font-medium text-[#334760] mb-1.5">
                 Weather Condition
               </label>
               <select
@@ -399,7 +399,7 @@ export const SimulationPanel: React.FC<SimulationPanelProps> = ({
                 onChange={(e) =>
                   handleEnvChange('weatherCondition', e.target.value as WeatherCondition)
                 }
-                className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900"
+                className="w-full rounded-lg border border-[#C3D0E0] bg-white px-3 py-2 text-xs text-[#0C192C]"
               >
                 <option value={WeatherCondition.CLEAR}>Clear Sky</option>
                 <option value={WeatherCondition.PARTLY_CLOUDY}>Partly Cloudy</option>
@@ -411,7 +411,7 @@ export const SimulationPanel: React.FC<SimulationPanelProps> = ({
             </div>
 
             <div>
-              <label htmlFor="sim-aqi" className="block text-xs font-medium text-slate-700 mb-1.5">
+              <label htmlFor="sim-aqi" className="block text-xs font-medium text-[#334760] mb-1.5">
                 Air Quality Index (AQI)
               </label>
               <input
@@ -424,7 +424,7 @@ export const SimulationPanel: React.FC<SimulationPanelProps> = ({
                   const val = Math.max(5, Math.min(300, Number(e.target.value) || 5));
                   handleEnvChange('airQualityIndex', val);
                 }}
-                className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-mono tabular-nums text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900"
+                className="w-full rounded-lg border border-[#C3D0E0] bg-white px-3 py-2 text-xs font-mono tabular-nums text-[#0C192C]"
               />
             </div>
           </div>
