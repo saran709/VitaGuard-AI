@@ -1,0 +1,914 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Global Safety Net: Default deny all unmatched paths
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Core Primitives
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function userProfileExists(uid) {
+      return exists(/databases/$(database)/documents/users/$(uid));
+    }
+
+    function isValidRiskLevel(level) {
+      return level is string && level.size() <= 16 && (
+        level == 'low' ||
+        level == 'moderate' ||
+        level == 'high' ||
+        level == 'critical'
+      );
+    }
+
+    // 1. UserProfile Blueprint (/users/{uid})
+    function isValidUserProfile(data, uid) {
+      return data.keys().hasAll([
+        'uid',
+        'email',
+        'displayName',
+        'simulationNoticeAccepted',
+        'createdAt',
+        'updatedAt'
+      ]) &&
+      data.keys().hasOnly([
+        'uid',
+        'email',
+        'displayName',
+        'simulationNoticeAccepted',
+        'createdAt',
+        'updatedAt'
+      ]) &&
+      data.uid is string && data.uid.size() >= 1 && data.uid.size() <= 128 &&
+      data.uid == uid && data.uid == request.auth.uid &&
+      data.email is string && data.email.size() >= 3 && data.email.size() <= 254 &&
+      data.displayName is string && data.displayName.size() >= 1 && data.displayName.size() <= 100 &&
+      data.simulationNoticeAccepted is bool && data.simulationNoticeAccepted == true &&
+      data.createdAt is timestamp &&
+      data.updatedAt is timestamp;
+    }
+
+    // 2. UserSettings Blueprint (/users/{uid}/settings/{settingId})
+    function isValidUserSettings(data, uid) {
+      return data.keys().hasAll([
+        'userId',
+        'ruleVersion',
+        'hrCriticalLow',
+        'hrLowMin',
+        'hrModerateHigh',
+        'hrHighHigh',
+        'hrCriticalHigh',
+        'spo2NormalMin',
+        'spo2ModerateMin',
+        'spo2HighMin',
+        'bodyTempLowHypothermia',
+        'bodyTempNormalMin',
+        'bodyTempNormalMax',
+        'bodyTempModerateMax',
+        'bodyTempHighMax',
+        'ambientColdCritical',
+        'ambientColdWarn',
+        'ambientHeatWarn',
+        'ambientHeatHigh',
+        'ambientHeatCritical',
+        'updatedAt'
+      ]) &&
+      data.keys().hasOnly([
+        'userId',
+        'ruleVersion',
+        'hrCriticalLow',
+        'hrLowMin',
+        'hrModerateHigh',
+        'hrHighHigh',
+        'hrCriticalHigh',
+        'spo2NormalMin',
+        'spo2ModerateMin',
+        'spo2HighMin',
+        'bodyTempLowHypothermia',
+        'bodyTempNormalMin',
+        'bodyTempNormalMax',
+        'bodyTempModerateMax',
+        'bodyTempHighMax',
+        'ambientColdCritical',
+        'ambientColdWarn',
+        'ambientHeatWarn',
+        'ambientHeatHigh',
+        'ambientHeatCritical',
+        'updatedAt'
+      ]) &&
+      data.userId is string && data.userId.size() >= 1 && data.userId.size() <= 128 &&
+      data.userId == uid && data.userId == request.auth.uid &&
+      data.ruleVersion is string && data.ruleVersion.size() >= 1 && data.ruleVersion.size() <= 40 &&
+      data.hrCriticalLow is number && data.hrLowMin is number &&
+      data.hrModerateHigh is number && data.hrHighHigh is number && data.hrCriticalHigh is number &&
+      data.hrCriticalLow < data.hrLowMin &&
+      data.hrModerateHigh < data.hrHighHigh &&
+      data.hrHighHigh < data.hrCriticalHigh &&
+      data.spo2NormalMin is number && data.spo2ModerateMin is number && data.spo2HighMin is number &&
+      data.spo2HighMin < data.spo2ModerateMin &&
+      data.spo2ModerateMin < data.spo2NormalMin &&
+      data.bodyTempLowHypothermia is number && data.bodyTempNormalMin is number &&
+      data.bodyTempNormalMax is number && data.bodyTempModerateMax is number && data.bodyTempHighMax is number &&
+      data.ambientColdCritical is number && data.ambientColdWarn is number &&
+      data.ambientHeatWarn is number && data.ambientHeatHigh is number && data.ambientHeatCritical is number &&
+      data.updatedAt is timestamp;
+    }
+
+    // 3. EmergencyContact Blueprint (/users/{uid}/emergencyContacts/{contactId})
+    function isValidEmergencyContact(data, uid) {
+      return data.keys().hasAll([
+        'userId',
+        'name',
+        'relationship',
+        'phoneDisplay',
+        'email',
+        'isPrimary',
+        'notifyOnLevel',
+        'isDemoOnly',
+        'createdAt',
+        'updatedAt'
+      ]) &&
+      data.keys().hasOnly([
+        'userId',
+        'name',
+        'relationship',
+        'phoneDisplay',
+        'email',
+        'isPrimary',
+        'notifyOnLevel',
+        'isDemoOnly',
+        'createdAt',
+        'updatedAt'
+      ]) &&
+      data.userId is string && data.userId.size() >= 1 && data.userId.size() <= 128 &&
+      data.userId == uid && data.userId == request.auth.uid &&
+      data.name is string && data.name.size() >= 1 && data.name.size() <= 100 &&
+      data.relationship is string && data.relationship.size() >= 1 && data.relationship.size() <= 80 &&
+      data.phoneDisplay is string && data.phoneDisplay.size() >= 3 && data.phoneDisplay.size() <= 40 &&
+      data.email is string && data.email.size() >= 3 && data.email.size() <= 254 &&
+      data.isPrimary is bool &&
+      data.notifyOnLevel is string && data.notifyOnLevel.size() <= 16 &&
+      (data.notifyOnLevel == 'high' || data.notifyOnLevel == 'critical') &&
+      data.isDemoOnly is bool && data.isDemoOnly == true &&
+      data.createdAt is timestamp &&
+      data.updatedAt is timestamp;
+    }
+
+    // 4. SimulatedObservation Blueprint (/users/{uid}/observations/{observationId})
+    function isValidObservation(data, uid) {
+      return data.keys().hasAll([
+        'userId',
+        'isSimulated',
+        'sourceLabel',
+        'heartRateBpm',
+        'oxygenSaturationPct',
+        'bodyTempCelsius',
+        'activityLevel',
+        'ambientTempCelsius',
+        'humidityPct',
+        'weatherCondition',
+        'createdAt'
+      ]) &&
+      data.keys().hasOnly([
+        'userId',
+        'isSimulated',
+        'sourceLabel',
+        'heartRateBpm',
+        'oxygenSaturationPct',
+        'bodyTempCelsius',
+        'activityLevel',
+        'ambientTempCelsius',
+        'humidityPct',
+        'weatherCondition',
+        'createdAt'
+      ]) &&
+      data.userId is string && data.userId.size() >= 1 && data.userId.size() <= 128 &&
+      data.userId == uid && data.userId == request.auth.uid &&
+      data.isSimulated is bool && data.isSimulated == true &&
+      data.sourceLabel is string && data.sourceLabel.size() >= 1 && data.sourceLabel.size() <= 64 &&
+      data.heartRateBpm is number && data.heartRateBpm >= 20 && data.heartRateBpm <= 250 &&
+      data.oxygenSaturationPct is number && data.oxygenSaturationPct >= 50 && data.oxygenSaturationPct <= 100 &&
+      data.bodyTempCelsius is number && data.bodyTempCelsius >= 30 && data.bodyTempCelsius <= 45 &&
+      data.activityLevel is string && data.activityLevel.size() <= 32 && (
+        data.activityLevel == 'resting' ||
+        data.activityLevel == 'light_walking' ||
+        data.activityLevel == 'moderate_exercise' ||
+        data.activityLevel == 'intense_exertion'
+      ) &&
+      data.ambientTempCelsius is number && data.ambientTempCelsius >= -50 && data.ambientTempCelsius <= 70 &&
+      data.humidityPct is number && data.humidityPct >= 0 && data.humidityPct <= 100 &&
+      data.weatherCondition is string && data.weatherCondition.size() <= 32 && (
+        data.weatherCondition == 'clear' ||
+        data.weatherCondition == 'partly_cloudy' ||
+        data.weatherCondition == 'high_humidity' ||
+        data.weatherCondition == 'heatwave' ||
+        data.weatherCondition == 'heavy_rain' ||
+        data.weatherCondition == 'freezing_wind'
+      ) &&
+      data.createdAt is timestamp;
+    }
+
+    // 5. RiskAssessmentRecord Blueprint (/users/{uid}/riskAssessments/{assessmentId})
+    function isValidRiskAssessment(data, uid) {
+      return data.keys().hasAll([
+        'userId',
+        'isSimulated',
+        'ruleVersion',
+        'riskLevel',
+        'overallScore',
+        'physiologicalRisk',
+        'environmentalRisk',
+        'heatIndexCelsius',
+        'primaryConcern',
+        'triggeredRuleCount',
+        'createdAt'
+      ]) &&
+      data.keys().hasOnly([
+        'userId',
+        'isSimulated',
+        'ruleVersion',
+        'riskLevel',
+        'overallScore',
+        'physiologicalRisk',
+        'environmentalRisk',
+        'heatIndexCelsius',
+        'primaryConcern',
+        'triggeredRuleCount',
+        'createdAt'
+      ]) &&
+      data.userId is string && data.userId.size() >= 1 && data.userId.size() <= 128 &&
+      data.userId == uid && data.userId == request.auth.uid &&
+      data.isSimulated is bool && data.isSimulated == true &&
+      data.ruleVersion is string && data.ruleVersion.size() >= 1 && data.ruleVersion.size() <= 40 &&
+      isValidRiskLevel(data.riskLevel) &&
+      data.overallScore is number && data.overallScore >= 0 && data.overallScore <= 100 &&
+      isValidRiskLevel(data.physiologicalRisk) &&
+      isValidRiskLevel(data.environmentalRisk) &&
+      data.heatIndexCelsius is number &&
+      data.primaryConcern is string && data.primaryConcern.size() >= 1 && data.primaryConcern.size() <= 300 &&
+      data.triggeredRuleCount is number && data.triggeredRuleCount >= 0 && data.triggeredRuleCount <= 20 &&
+      data.createdAt is timestamp;
+    }
+
+    // 6. SafetyAlertRecord Blueprint (/users/{uid}/alerts/{alertId})
+    function isValidSafetyAlert(data, uid) {
+      return data.keys().hasAll([
+        'userId',
+        'isSimulated',
+        'ruleVersion',
+        'status',
+        'riskLevel',
+        'title',
+        'summary',
+        'escalationStage',
+        'acknowledged',
+        'acknowledgementNote',
+        'acknowledgedAtIso',
+        'createdAt',
+        'updatedAt'
+      ]) &&
+      data.keys().hasOnly([
+        'userId',
+        'isSimulated',
+        'ruleVersion',
+        'status',
+        'riskLevel',
+        'title',
+        'summary',
+        'escalationStage',
+        'acknowledged',
+        'acknowledgementNote',
+        'acknowledgedAtIso',
+        'createdAt',
+        'updatedAt'
+      ]) &&
+      data.userId is string && data.userId.size() >= 1 && data.userId.size() <= 128 &&
+      data.userId == uid && data.userId == request.auth.uid &&
+      data.isSimulated is bool && data.isSimulated == true &&
+      data.ruleVersion is string && data.ruleVersion.size() >= 1 && data.ruleVersion.size() <= 40 &&
+      data.status is string && data.status.size() <= 20 && (
+        data.status == 'ACTIVE' ||
+        data.status == 'ACKNOWLEDGED' ||
+        data.status == 'RESOLVED' ||
+        data.status == 'CANCELLED'
+      ) &&
+      isValidRiskLevel(data.riskLevel) &&
+      data.title is string && data.title.size() >= 1 && data.title.size() <= 200 &&
+      data.summary is string && data.summary.size() >= 1 && data.summary.size() <= 600 &&
+      data.escalationStage is string && data.escalationStage.size() <= 32 && (
+        data.escalationStage == 'monitoring' ||
+        data.escalationStage == 'prompted_user' ||
+        data.escalationStage == 'check_in_overdue' ||
+        data.escalationStage == 'demo_contact_ready' ||
+        data.escalationStage == 'acknowledged_safe'
+      ) &&
+      data.acknowledged is bool &&
+      data.acknowledgementNote is string && data.acknowledgementNote.size() <= 300 &&
+      data.acknowledgedAtIso is string && data.acknowledgedAtIso.size() <= 64 &&
+      data.createdAt is timestamp &&
+      data.updatedAt is timestamp;
+    }
+
+    // 7. AuditEventRecord Blueprint (/users/{uid}/auditEvents/{eventId})
+    function isValidAuditEvent(data, uid) {
+      return data.keys().hasAll([
+        'userId',
+        'eventType',
+        'riskLevel',
+        'title',
+        'detail',
+        'alertId',
+        'createdAt'
+      ]) &&
+      data.keys().hasOnly([
+        'userId',
+        'eventType',
+        'riskLevel',
+        'title',
+        'detail',
+        'alertId',
+        'createdAt'
+      ]) &&
+      data.userId is string && data.userId.size() >= 1 && data.userId.size() <= 128 &&
+      data.userId == uid && data.userId == request.auth.uid &&
+      data.eventType is string && data.eventType.size() <= 32 && (
+        data.eventType == 'assessment_change' ||
+        data.eventType == 'alert_triggered' ||
+        data.eventType == 'user_acknowledged' ||
+        data.eventType == 'escalation_step' ||
+        data.eventType == 'escalation_scheduled' ||
+        data.eventType == 'escalation_cancelled' ||
+        data.eventType == 'notification_attempt' ||
+        data.eventType == 'preset_applied' ||
+        data.eventType == 'rules_updated' ||
+        data.eventType == 'contact_simulated' ||
+        data.eventType == 'ai_explanation_generated' ||
+        data.eventType == 'provider_connected' ||
+        data.eventType == 'provider_disconnected' ||
+        data.eventType == 'observation_ingested' ||
+        data.eventType == 'observation_quarantined'
+      ) &&
+      isValidRiskLevel(data.riskLevel) &&
+      data.title is string && data.title.size() >= 1 && data.title.size() <= 200 &&
+      data.detail is string && data.detail.size() >= 1 && data.detail.size() <= 600 &&
+      data.alertId is string && data.alertId.size() <= 128 &&
+      data.createdAt is timestamp;
+    }
+
+    // 8. AIExplanationRecord Blueprint (/users/{uid}/aiExplanations/{explanationId})
+    function isValidAIExplanation(data, uid) {
+      return data.keys().hasAll([
+        'userId',
+        'assessmentId',
+        'assessmentFingerprint',
+        'modelId',
+        'promptVersion',
+        'schemaVersion',
+        'dataMode',
+        'summary',
+        'contributingFactors',
+        'uncertainties',
+        'recommendedActions',
+        'limitations',
+        'generatedAtIso',
+        'createdAt'
+      ]) &&
+      data.keys().hasOnly([
+        'userId',
+        'assessmentId',
+        'assessmentFingerprint',
+        'modelId',
+        'promptVersion',
+        'schemaVersion',
+        'dataMode',
+        'summary',
+        'contributingFactors',
+        'uncertainties',
+        'recommendedActions',
+        'limitations',
+        'generatedAtIso',
+        'createdAt'
+      ]) &&
+      data.userId is string && data.userId.size() >= 1 && data.userId.size() <= 128 &&
+      data.userId == uid && data.userId == request.auth.uid &&
+      isValidId(data.assessmentId) &&
+      data.assessmentFingerprint is string && data.assessmentFingerprint.size() >= 4 && data.assessmentFingerprint.size() <= 128 &&
+      data.modelId is string && data.modelId.size() >= 1 && data.modelId.size() <= 64 &&
+      data.promptVersion is string && data.promptVersion.size() >= 1 && data.promptVersion.size() <= 64 &&
+      data.schemaVersion is string && data.schemaVersion.size() >= 1 && data.schemaVersion.size() <= 64 &&
+      data.dataMode is string && data.dataMode.size() <= 16 && (
+        data.dataMode == 'SIMULATED' ||
+        data.dataMode == 'REAL'
+      ) &&
+      data.summary is string && data.summary.size() >= 10 && data.summary.size() <= 1000 &&
+      data.contributingFactors is list && data.contributingFactors.size() >= 1 && data.contributingFactors.size() <= 12 &&
+      data.uncertainties is list && data.uncertainties.size() >= 1 && data.uncertainties.size() <= 12 &&
+      data.recommendedActions is list && data.recommendedActions.size() >= 1 && data.recommendedActions.size() <= 10 &&
+      data.limitations is string && data.limitations.size() >= 15 && data.limitations.size() <= 600 &&
+      data.generatedAtIso is string && data.generatedAtIso.size() >= 10 && data.generatedAtIso.size() <= 64 &&
+      data.createdAt is timestamp;
+    }
+
+    // 9. EscalationTaskRecord Blueprint (/users/{uid}/escalationTasks/{taskId})
+    function isValidEscalationTask(data, uid) {
+      return data.keys().hasAll([
+        'taskId',
+        'alertId',
+        'userId',
+        'riskLevel',
+        'status',
+        'deadlineIso',
+        'timeoutSeconds',
+        'executionCount',
+        'cancellationReason',
+        'createdAt',
+        'updatedAt'
+      ]) &&
+      data.keys().hasOnly([
+        'taskId',
+        'alertId',
+        'userId',
+        'riskLevel',
+        'status',
+        'deadlineIso',
+        'timeoutSeconds',
+        'executionCount',
+        'cancellationReason',
+        'createdAt',
+        'updatedAt'
+      ]) &&
+      isValidId(data.taskId) &&
+      isValidId(data.alertId) &&
+      data.userId is string && data.userId.size() >= 1 && data.userId.size() <= 128 &&
+      data.userId == uid && data.userId == request.auth.uid &&
+      isValidRiskLevel(data.riskLevel) &&
+      data.status is string && data.status.size() <= 24 && (
+        data.status == 'SCHEDULED' ||
+        data.status == 'PROCESSING' ||
+        data.status == 'COMPLETED' ||
+        data.status == 'CANCELLED' ||
+        data.status == 'SKIPPED_SAFE'
+      ) &&
+      data.deadlineIso is string && data.deadlineIso.size() >= 10 && data.deadlineIso.size() <= 64 &&
+      data.timeoutSeconds is number && data.timeoutSeconds >= 15 && data.timeoutSeconds <= 900 &&
+      data.executionCount is number && data.executionCount >= 0 && data.executionCount <= 10 &&
+      data.cancellationReason is string && data.cancellationReason.size() <= 300 &&
+      data.createdAt is timestamp &&
+      data.updatedAt is timestamp;
+    }
+
+    // 10. NotificationAttemptRecord Blueprint (/users/{uid}/notificationAttempts/{attemptId})
+    // Security Rule: Clients are strictly forbidden from writing 'DELIVERED' status.
+    function isValidNotificationAttempt(data, uid) {
+      return data.keys().hasAll([
+        'attemptId',
+        'idempotencyKey',
+        'alertId',
+        'userId',
+        'contactId',
+        'contactName',
+        'channel',
+        'mode',
+        'status',
+        'providerName',
+        'messagePreview',
+        'AttemptedAtIso',
+        'createdAt'
+      ]) &&
+      data.keys().hasOnly([
+        'attemptId',
+        'idempotencyKey',
+        'alertId',
+        'userId',
+        'contactId',
+        'contactName',
+        'channel',
+        'mode',
+        'status',
+        'providerName',
+        'messagePreview',
+        'AttemptedAtIso',
+        'createdAt'
+      ]) &&
+      isValidId(data.attemptId) &&
+      data.idempotencyKey is string && data.idempotencyKey.size() >= 4 && data.idempotencyKey.size() <= 160 &&
+      isValidId(data.alertId) &&
+      data.userId is string && data.userId.size() >= 1 && data.userId.size() <= 128 &&
+      data.userId == uid && data.userId == request.auth.uid &&
+      isValidId(data.contactId) &&
+      data.contactName is string && data.contactName.size() >= 1 && data.contactName.size() <= 100 &&
+      data.channel is string && data.channel.size() <= 24 && (
+        data.channel == 'SMS' ||
+        data.channel == 'EMAIL' ||
+        data.channel == 'IN_APP_SIMULATION'
+      ) &&
+      data.mode is string && data.mode.size() <= 24 && (
+        data.mode == 'SIMULATION' ||
+        data.mode == 'VERIFIED_GATEWAY'
+      ) &&
+      data.status is string && data.status.size() <= 24 &&
+      data.status != 'DELIVERED' && (
+        data.status == 'QUEUED' ||
+        data.status == 'SUBMITTED' ||
+        data.status == 'FAILED' ||
+        data.status == 'UNKNOWN' ||
+        data.status == 'CANCELLED' ||
+        data.status == 'SUPPRESSED_CONSENT'
+      ) &&
+      data.providerName is string && data.providerName.size() >= 1 && data.providerName.size() <= 80 &&
+      data.messagePreview is string && data.messagePreview.size() >= 1 && data.messagePreview.size() <= 500 &&
+      data.AttemptedAtIso is string && data.AttemptedAtIso.size() >= 10 && data.AttemptedAtIso.size() <= 64 &&
+      data.createdAt is timestamp;
+    }
+
+    // 11. NormalizedObservationRecord Blueprint (/users/{uid}/normalizedObservations/{observationId})
+    // Security Rule: Client writes from simulation providers can NEVER claim dataMode == 'REAL'.
+    function isValidNormalizedObservation(data, uid) {
+      return data.keys().hasAll([
+        'observationId',
+        'authenticatedOwnerId',
+        'metricType',
+        'unit',
+        'observedAt',
+        'receivedAt',
+        'sourceProvider',
+        'dataMode',
+        'validationStatus',
+        'freshnessStatus',
+        'createdAt'
+      ]) &&
+      data.keys().hasOnly([
+        'observationId',
+        'authenticatedOwnerId',
+        'metricType',
+        'unit',
+        'observedAt',
+        'receivedAt',
+        'sourceProvider',
+        'dataMode',
+        'validationStatus',
+        'freshnessStatus',
+        'createdAt'
+      ]) &&
+      isValidId(data.observationId) &&
+      data.authenticatedOwnerId is string && data.authenticatedOwnerId.size() >= 1 && data.authenticatedOwnerId.size() <= 128 &&
+      data.authenticatedOwnerId == uid && data.authenticatedOwnerId == request.auth.uid &&
+      data.metricType is string && data.metricType.size() <= 32 && (
+        data.metricType == 'heart_rate' ||
+        data.metricType == 'oxygen_saturation' ||
+        data.metricType == 'body_temperature' ||
+        data.metricType == 'activity_state' ||
+        data.metricType == 'step_cadence' ||
+        data.metricType == 'ambient_temperature' ||
+        data.metricType == 'relative_humidity' ||
+        data.metricType == 'weather_condition' ||
+        data.metricType == 'wind_speed' ||
+        data.metricType == 'air_quality_index'
+      ) &&
+      data.unit is string && data.unit.size() <= 24 && (
+        data.unit == 'bpm' ||
+        data.unit == 'pct' ||
+        data.unit == 'celsius' ||
+        data.unit == 'enum_activity' ||
+        data.unit == 'steps_per_min' ||
+        data.unit == 'enum_weather' ||
+        data.unit == 'kmh' ||
+        data.unit == 'aqi'
+      ) &&
+      data.observedAt is string && data.observedAt.size() >= 10 && data.observedAt.size() <= 64 &&
+      data.receivedAt is string && data.receivedAt.size() >= 10 && data.receivedAt.size() <= 64 &&
+      data.sourceProvider is string && data.sourceProvider.size() >= 1 && data.sourceProvider.size() <= 64 &&
+      data.dataMode is string && data.dataMode == 'SIMULATED' &&
+      data.validationStatus is string && data.validationStatus.size() <= 32 && (
+        data.validationStatus == 'VALIDATED' ||
+        data.validationStatus == 'QUARANTINED_OUT_OF_ORDER'
+      ) &&
+      data.freshnessStatus is string && data.freshnessStatus.size() <= 16 && (
+        data.freshnessStatus == 'CURRENT' ||
+        data.freshnessStatus == 'STALE' ||
+        data.freshnessStatus == 'MISSING' ||
+        data.freshnessStatus == 'INVALID'
+      ) &&
+      data.createdAt is timestamp;
+    }
+
+    // Match: /users/{uid}
+    match /users/{uid} {
+      allow get: if isOwner(uid) && isValidId(uid);
+      allow list: if false;
+
+      allow create: if isOwner(uid) &&
+        isValidId(uid) &&
+        isValidUserProfile(incoming(), uid) &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time;
+
+      allow update: if isOwner(uid) &&
+        isValidId(uid) &&
+        isValidUserProfile(incoming(), uid) &&
+        incoming().uid == existing().uid &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().updatedAt == request.time &&
+        incoming().diff(existing()).affectedKeys().hasOnly(['displayName', 'email', 'updatedAt']);
+
+      allow delete: if false;
+
+      // Subcollection: /users/{uid}/settings/{settingId}
+      match /settings/{settingId} {
+        allow get: if isOwner(uid) && isValidId(uid) && isValidId(settingId);
+        allow list: if isOwner(uid) && existing().userId == request.auth.uid;
+
+        allow create: if isOwner(uid) &&
+          isValidId(uid) &&
+          isValidId(settingId) &&
+          isValidUserSettings(incoming(), uid) &&
+          incoming().updatedAt == request.time &&
+          userProfileExists(uid);
+
+        allow update: if isOwner(uid) &&
+          isValidId(uid) &&
+          isValidId(settingId) &&
+          isValidUserSettings(incoming(), uid) &&
+          incoming().userId == existing().userId &&
+          incoming().updatedAt == request.time &&
+          incoming().diff(existing()).affectedKeys().hasOnly([
+            'ruleVersion',
+            'hrCriticalLow',
+            'hrLowMin',
+            'hrModerateHigh',
+            'hrHighHigh',
+            'hrCriticalHigh',
+            'spo2NormalMin',
+            'spo2ModerateMin',
+            'spo2HighMin',
+            'bodyTempLowHypothermia',
+            'bodyTempNormalMin',
+            'bodyTempNormalMax',
+            'bodyTempModerateMax',
+            'bodyTempHighMax',
+            'ambientColdCritical',
+            'ambientColdWarn',
+            'ambientHeatWarn',
+            'ambientHeatHigh',
+            'ambientHeatCritical',
+            'updatedAt'
+          ]) &&
+          userProfileExists(uid);
+
+        allow delete: if false;
+      }
+
+      // Subcollection: /users/{uid}/emergencyContacts/{contactId}
+      match /emergencyContacts/{contactId} {
+        allow get: if isOwner(uid) && isValidId(uid) && isValidId(contactId);
+        allow list: if isOwner(uid) && existing().userId == request.auth.uid;
+
+        allow create: if isOwner(uid) &&
+          isValidId(uid) &&
+          isValidId(contactId) &&
+          isValidEmergencyContact(incoming(), uid) &&
+          incoming().createdAt == request.time &&
+          incoming().updatedAt == request.time &&
+          userProfileExists(uid);
+
+        allow update: if isOwner(uid) &&
+          isValidId(uid) &&
+          isValidId(contactId) &&
+          isValidEmergencyContact(incoming(), uid) &&
+          incoming().userId == existing().userId &&
+          incoming().createdAt == existing().createdAt &&
+          incoming().updatedAt == request.time &&
+          incoming().diff(existing()).affectedKeys().hasOnly([
+            'name',
+            'relationship',
+            'phoneDisplay',
+            'email',
+            'isPrimary',
+            'notifyOnLevel',
+            'updatedAt'
+          ]) &&
+          userProfileExists(uid);
+
+        allow delete: if isOwner(uid) &&
+          isValidId(uid) &&
+          isValidId(contactId) &&
+          existing().userId == request.auth.uid &&
+          userProfileExists(uid);
+      }
+
+      // Subcollection: /users/{uid}/observations/{observationId} (Append-only)
+      match /observations/{observationId} {
+        allow get: if isOwner(uid) && isValidId(uid) && isValidId(observationId);
+        allow list: if isOwner(uid) && existing().userId == request.auth.uid;
+
+        allow create: if isOwner(uid) &&
+          isValidId(uid) &&
+          isValidId(observationId) &&
+          isValidObservation(incoming(), uid) &&
+          incoming().createdAt == request.time &&
+          userProfileExists(uid);
+
+        allow update, delete: if false;
+      }
+
+      // Subcollection: /users/{uid}/riskAssessments/{assessmentId} (Append-only)
+      match /riskAssessments/{assessmentId} {
+        allow get: if isOwner(uid) && isValidId(uid) && isValidId(assessmentId);
+        allow list: if isOwner(uid) && existing().userId == request.auth.uid;
+
+        allow create: if isOwner(uid) &&
+          isValidId(uid) &&
+          isValidId(assessmentId) &&
+          isValidRiskAssessment(incoming(), uid) &&
+          incoming().createdAt == request.time &&
+          userProfileExists(uid);
+
+        allow update, delete: if false;
+      }
+
+      // Subcollection: /users/{uid}/alerts/{alertId}
+      match /alerts/{alertId} {
+        allow get: if isOwner(uid) && isValidId(uid) && isValidId(alertId);
+        allow list: if isOwner(uid) && existing().userId == request.auth.uid;
+
+        allow create: if isOwner(uid) &&
+          isValidId(uid) &&
+          isValidId(alertId) &&
+          isValidSafetyAlert(incoming(), uid) &&
+          incoming().status == 'ACTIVE' &&
+          incoming().acknowledged == false &&
+          incoming().createdAt == request.time &&
+          incoming().updatedAt == request.time &&
+          userProfileExists(uid);
+
+        allow update: if isOwner(uid) &&
+          isValidId(uid) &&
+          isValidId(alertId) &&
+          isValidSafetyAlert(incoming(), uid) &&
+          existing().status != 'RESOLVED' &&
+          existing().status != 'CANCELLED' &&
+          incoming().userId == existing().userId &&
+          incoming().createdAt == existing().createdAt &&
+          incoming().updatedAt == request.time && (
+            // Action 1: Acknowledge Alert ("I am safe") — idempotent / one-way transition
+            (
+              incoming().status == 'ACKNOWLEDGED' &&
+              incoming().acknowledged == true &&
+              incoming().escalationStage == 'acknowledged_safe' &&
+              incoming().diff(existing()).affectedKeys().hasOnly([
+                'status',
+                'acknowledged',
+                'acknowledgementNote',
+                'acknowledgedAtIso',
+                'escalationStage',
+                'updatedAt'
+              ])
+            ) ||
+            // Action 2: Escalate or Update Active Alert (only permitted while ACTIVE and unacknowledged)
+            (
+              existing().status == 'ACTIVE' &&
+              existing().acknowledged == false &&
+              incoming().status == 'ACTIVE' &&
+              incoming().acknowledged == false &&
+              incoming().diff(existing()).affectedKeys().hasOnly([
+                'riskLevel',
+                'title',
+                'summary',
+                'escalationStage',
+                'updatedAt'
+              ])
+            ) ||
+            // Action 3: Resolve or Cancel Alert
+            (
+              (incoming().status == 'RESOLVED' || incoming().status == 'CANCELLED') &&
+              incoming().diff(existing()).affectedKeys().hasOnly([
+                'status',
+                'updatedAt'
+              ])
+            )
+          ) &&
+          userProfileExists(uid);
+
+        allow delete: if false;
+      }
+
+      // Subcollection: /users/{uid}/auditEvents/{eventId} (Immutable Append-Only Audit Log)
+      match /auditEvents/{eventId} {
+        allow get: if isOwner(uid) && isValidId(uid) && isValidId(eventId);
+        allow list: if isOwner(uid) && existing().userId == request.auth.uid;
+
+        allow create: if isOwner(uid) &&
+          isValidId(uid) &&
+          isValidId(eventId) &&
+          isValidAuditEvent(incoming(), uid) &&
+          incoming().createdAt == request.time &&
+          userProfileExists(uid);
+
+        allow update, delete: if false;
+      }
+
+      // Subcollection: /users/{uid}/aiExplanations/{explanationId} (Append-Only Validated AI Explanations)
+      match /aiExplanations/{explanationId} {
+        allow get: if isOwner(uid) && isValidId(uid) && isValidId(explanationId);
+        allow list: if isOwner(uid) && existing().userId == request.auth.uid;
+
+        allow create: if isOwner(uid) &&
+          isValidId(uid) &&
+          isValidId(explanationId) &&
+          isValidAIExplanation(incoming(), uid) &&
+          incoming().createdAt == request.time &&
+          userProfileExists(uid);
+
+        allow update, delete: if false;
+      }
+
+      // Subcollection: /users/{uid}/escalationTasks/{taskId}
+      match /escalationTasks/{taskId} {
+        allow get: if isOwner(uid) && isValidId(uid) && isValidId(taskId);
+        allow list: if isOwner(uid) && existing().userId == request.auth.uid;
+
+        allow create: if isOwner(uid) &&
+          isValidId(uid) &&
+          isValidId(taskId) &&
+          isValidEscalationTask(incoming(), uid) &&
+          incoming().status == 'SCHEDULED' &&
+          incoming().executionCount == 0 &&
+          incoming().createdAt == request.time &&
+          incoming().updatedAt == request.time &&
+          userProfileExists(uid);
+
+        allow update: if isOwner(uid) &&
+          isValidId(uid) &&
+          isValidId(taskId) &&
+          isValidEscalationTask(incoming(), uid) &&
+          incoming().userId == existing().userId &&
+          incoming().taskId == existing().taskId &&
+          incoming().alertId == existing().alertId &&
+          incoming().createdAt == existing().createdAt &&
+          incoming().updatedAt == request.time &&
+          incoming().diff(existing()).affectedKeys().hasOnly([
+            'status',
+            'cancellationReason',
+            'updatedAt'
+          ]) &&
+          (incoming().status == 'CANCELLED' || incoming().status == 'SKIPPED_SAFE') &&
+          userProfileExists(uid);
+
+        allow delete: if false;
+      }
+
+      // Subcollection: /users/{uid}/notificationAttempts/{attemptId}
+      match /notificationAttempts/{attemptId} {
+        allow get: if isOwner(uid) && isValidId(uid) && isValidId(attemptId);
+        allow list: if isOwner(uid) && existing().userId == request.auth.uid;
+
+        allow create: if isOwner(uid) &&
+          isValidId(uid) &&
+          isValidId(attemptId) &&
+          isValidNotificationAttempt(incoming(), uid) &&
+          incoming().mode == 'SIMULATION' &&
+          incoming().createdAt == request.time &&
+          userProfileExists(uid);
+
+        allow update, delete: if false;
+      }
+
+      // Subcollection: /users/{uid}/normalizedObservations/{observationId}
+      match /normalizedObservations/{observationId} {
+        allow get: if isOwner(uid) && isValidId(uid) && isValidId(observationId);
+        allow list: if isOwner(uid) && existing().authenticatedOwnerId == request.auth.uid;
+
+        allow create: if isOwner(uid) &&
+          isValidId(uid) &&
+          isValidId(observationId) &&
+          isValidNormalizedObservation(incoming(), uid) &&
+          incoming().createdAt == request.time &&
+          userProfileExists(uid);
+
+        allow update, delete: if false;
+      }
+    }
+  }
+}
+

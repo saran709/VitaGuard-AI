@@ -1,0 +1,821 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Minimal authenticated user profile document for ownership verification and session metadata.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "Immutable Firebase Auth UID of the account owner.",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "email": {
+          "type": "string",
+          "description": "Account email address.",
+          "minLength": 3,
+          "maxLength": 254
+        },
+        "displayName": {
+          "type": "string",
+          "description": "User display name.",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "simulationNoticeAccepted": {
+          "type": "boolean",
+          "description": "Confirms the user understands all telemetry is simulated."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when the profile was initialized."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when the profile was last updated."
+        }
+      },
+      "required": [
+        "uid",
+        "email",
+        "displayName",
+        "simulationNoticeAccepted",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "UserSettings": {
+      "title": "UserSettings",
+      "description": "User-configurable risk engine thresholds and simulation preferences.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "ruleVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 40
+        },
+        "hrCriticalLow": { "type": "number" },
+        "hrLowMin": { "type": "number" },
+        "hrModerateHigh": { "type": "number" },
+        "hrHighHigh": { "type": "number" },
+        "hrCriticalHigh": { "type": "number" },
+        "spo2NormalMin": { "type": "number" },
+        "spo2ModerateMin": { "type": "number" },
+        "spo2HighMin": { "type": "number" },
+        "bodyTempLowHypothermia": { "type": "number" },
+        "bodyTempNormalMin": { "type": "number" },
+        "bodyTempNormalMax": { "type": "number" },
+        "bodyTempModerateMax": { "type": "number" },
+        "bodyTempHighMax": { "type": "number" },
+        "ambientColdCritical": { "type": "number" },
+        "ambientColdWarn": { "type": "number" },
+        "ambientHeatWarn": { "type": "number" },
+        "ambientHeatHigh": { "type": "number" },
+        "ambientHeatCritical": { "type": "number" },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "userId",
+        "ruleVersion",
+        "hrCriticalLow",
+        "hrLowMin",
+        "hrModerateHigh",
+        "hrHighHigh",
+        "hrCriticalHigh",
+        "spo2NormalMin",
+        "spo2ModerateMin",
+        "spo2HighMin",
+        "bodyTempLowHypothermia",
+        "bodyTempNormalMin",
+        "bodyTempNormalMax",
+        "bodyTempModerateMax",
+        "bodyTempHighMax",
+        "ambientColdCritical",
+        "ambientColdWarn",
+        "ambientHeatWarn",
+        "ambientHeatHigh",
+        "ambientHeatCritical",
+        "updatedAt"
+      ]
+    },
+    "EmergencyContact": {
+      "title": "EmergencyContact",
+      "description": "Demo-only emergency contact record scoped to a specific user.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "relationship": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "phoneDisplay": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 40
+        },
+        "email": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 254
+        },
+        "isPrimary": {
+          "type": "boolean"
+        },
+        "notifyOnLevel": {
+          "type": "string",
+          "enum": ["high", "critical"]
+        },
+        "isDemoOnly": {
+          "type": "boolean"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "userId",
+        "name",
+        "relationship",
+        "phoneDisplay",
+        "email",
+        "isPrimary",
+        "notifyOnLevel",
+        "isDemoOnly",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "SimulatedObservation": {
+      "title": "SimulatedObservation",
+      "description": "Minimal snapshot of simulated physiological and environmental readings.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "isSimulated": {
+          "type": "boolean"
+        },
+        "sourceLabel": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "heartRateBpm": { "type": "number" },
+        "oxygenSaturationPct": { "type": "number" },
+        "bodyTempCelsius": { "type": "number" },
+        "activityLevel": {
+          "type": "string",
+          "enum": ["resting", "light_walking", "moderate_exercise", "intense_exertion"]
+        },
+        "ambientTempCelsius": { "type": "number" },
+        "humidityPct": { "type": "number" },
+        "weatherCondition": {
+          "type": "string",
+          "enum": ["clear", "partly_cloudy", "high_humidity", "heatwave", "heavy_rain", "freezing_wind"]
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "userId",
+        "isSimulated",
+        "sourceLabel",
+        "heartRateBpm",
+        "oxygenSaturationPct",
+        "bodyTempCelsius",
+        "activityLevel",
+        "ambientTempCelsius",
+        "humidityPct",
+        "weatherCondition",
+        "createdAt"
+      ]
+    },
+    "RiskAssessmentRecord": {
+      "title": "RiskAssessmentRecord",
+      "description": "Persisted output of the deterministic rule-based risk engine.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "isSimulated": {
+          "type": "boolean"
+        },
+        "ruleVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 40
+        },
+        "riskLevel": {
+          "type": "string",
+          "enum": ["low", "moderate", "high", "critical"]
+        },
+        "overallScore": { "type": "number" },
+        "physiologicalRisk": {
+          "type": "string",
+          "enum": ["low", "moderate", "high", "critical"]
+        },
+        "environmentalRisk": {
+          "type": "string",
+          "enum": ["low", "moderate", "high", "critical"]
+        },
+        "heatIndexCelsius": { "type": "number" },
+        "primaryConcern": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300
+        },
+        "triggeredRuleCount": { "type": "number" },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "userId",
+        "isSimulated",
+        "ruleVersion",
+        "riskLevel",
+        "overallScore",
+        "physiologicalRisk",
+        "environmentalRisk",
+        "heatIndexCelsius",
+        "primaryConcern",
+        "triggeredRuleCount",
+        "createdAt"
+      ]
+    },
+    "SafetyAlertRecord": {
+      "title": "SafetyAlertRecord",
+      "description": "Persisted safety alert lifecycle record supporting ACTIVE, ACKNOWLEDGED, and RESOLVED states.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "isSimulated": {
+          "type": "boolean"
+        },
+        "ruleVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 40
+        },
+        "status": {
+          "type": "string",
+          "enum": ["ACTIVE", "ACKNOWLEDGED", "RESOLVED", "CANCELLED"]
+        },
+        "riskLevel": {
+          "type": "string",
+          "enum": ["low", "moderate", "high", "critical"]
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 600
+        },
+        "escalationStage": {
+          "type": "string",
+          "enum": [
+            "monitoring",
+            "prompted_user",
+            "check_in_overdue",
+            "demo_contact_ready",
+            "acknowledged_safe"
+          ]
+        },
+        "acknowledged": {
+          "type": "boolean"
+        },
+        "acknowledgementNote": {
+          "type": "string",
+          "maxLength": 300
+        },
+        "acknowledgedAtIso": {
+          "type": "string",
+          "maxLength": 64
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "userId",
+        "isSimulated",
+        "ruleVersion",
+        "status",
+        "riskLevel",
+        "title",
+        "summary",
+        "escalationStage",
+        "acknowledged",
+        "acknowledgementNote",
+        "acknowledgedAtIso",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "AuditEventRecord": {
+      "title": "AuditEventRecord",
+      "description": "Immutable append-only audit log entry for safety events, acknowledgements, and escalations.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "eventType": {
+          "type": "string",
+          "enum": [
+            "assessment_change",
+            "alert_triggered",
+            "user_acknowledged",
+            "escalation_step",
+            "escalation_scheduled",
+            "escalation_cancelled",
+            "notification_attempt",
+            "preset_applied",
+            "rules_updated",
+            "contact_simulated",
+            "ai_explanation_generated"
+          ]
+        },
+        "riskLevel": {
+          "type": "string",
+          "enum": ["low", "moderate", "high", "critical"]
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "detail": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 600
+        },
+        "alertId": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "userId",
+        "eventType",
+        "riskLevel",
+        "title",
+        "detail",
+        "alertId",
+        "createdAt"
+      ]
+    },
+    "AIExplanationRecord": {
+      "title": "AIExplanationRecord",
+      "description": "Persisted server-validated Gemini AI contextual explanation linked to a specific deterministic risk assessment.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "assessmentId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "assessmentFingerprint": {
+          "type": "string",
+          "minLength": 4,
+          "maxLength": 128
+        },
+        "modelId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "promptVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "schemaVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "dataMode": {
+          "type": "string",
+          "enum": ["SIMULATED", "REAL"]
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 10,
+          "maxLength": 1000
+        },
+        "contributingFactors": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "uncertainties": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "recommendedActions": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "limitations": {
+          "type": "string",
+          "minLength": 15,
+          "maxLength": 600
+        },
+        "generatedAtIso": {
+          "type": "string",
+          "minLength": 10,
+          "maxLength": 64
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "userId",
+        "assessmentId",
+        "assessmentFingerprint",
+        "modelId",
+        "promptVersion",
+        "schemaVersion",
+        "dataMode",
+        "summary",
+        "contributingFactors",
+        "uncertainties",
+        "recommendedActions",
+        "limitations",
+        "generatedAtIso",
+        "createdAt"
+      ]
+    },
+    "EscalationTaskRecord": {
+      "title": "EscalationTaskRecord",
+      "description": "Durable server-managed escalation task tracking deadline and execution status.",
+      "type": "object",
+      "properties": {
+        "taskId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "alertId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "userId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "riskLevel": {
+          "type": "string",
+          "enum": ["low", "moderate", "high", "critical"]
+        },
+        "status": {
+          "type": "string",
+          "enum": ["SCHEDULED", "PROCESSING", "COMPLETED", "CANCELLED", "SKIPPED_SAFE"]
+        },
+        "deadlineIso": {
+          "type": "string",
+          "minLength": 10,
+          "maxLength": 64
+        },
+        "timeoutSeconds": {
+          "type": "number"
+        },
+        "executionCount": {
+          "type": "number"
+        },
+        "cancellationReason": {
+          "type": "string",
+          "maxLength": 300
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "taskId",
+        "alertId",
+        "userId",
+        "riskLevel",
+        "status",
+        "deadlineIso",
+        "timeoutSeconds",
+        "executionCount",
+        "cancellationReason",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "NotificationAttemptRecord": {
+      "title": "NotificationAttemptRecord",
+      "description": "Audit record of an outbound or simulated notification attempt. Clients cannot mark status as DELIVERED.",
+      "type": "object",
+      "properties": {
+        "attemptId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "idempotencyKey": {
+          "type": "string",
+          "minLength": 4,
+          "maxLength": 160
+        },
+        "alertId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "userId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "contactId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "contactName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "channel": {
+          "type": "string",
+          "enum": ["SMS", "EMAIL", "IN_APP_SIMULATION"]
+        },
+        "mode": {
+          "type": "string",
+          "enum": ["SIMULATION", "VERIFIED_GATEWAY"]
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "QUEUED",
+            "SUBMITTED",
+            "FAILED",
+            "UNKNOWN",
+            "CANCELLED",
+            "SUPPRESSED_CONSENT"
+          ]
+        },
+        "providerName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "messagePreview": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "AttemptedAtIso": {
+          "type": "string",
+          "minLength": 10,
+          "maxLength": 64
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "attemptId",
+        "idempotencyKey",
+        "alertId",
+        "userId",
+        "contactId",
+        "contactName",
+        "channel",
+        "mode",
+        "status",
+        "providerName",
+        "messagePreview",
+        "AttemptedAtIso",
+        "createdAt"
+      ]
+    },
+    "NormalizedObservationRecord": {
+      "title": "NormalizedObservationRecord",
+      "description": "Validated, unit-normalized observation record with strict provenance and freshness tracking.",
+      "type": "object",
+      "properties": {
+        "observationId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "authenticatedOwnerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "metricType": {
+          "type": "string",
+          "enum": [
+            "heart_rate",
+            "oxygen_saturation",
+            "body_temperature",
+            "activity_state",
+            "step_cadence",
+            "ambient_temperature",
+            "relative_humidity",
+            "weather_condition",
+            "wind_speed",
+            "air_quality_index"
+          ]
+        },
+        "unit": {
+          "type": "string",
+          "enum": [
+            "bpm",
+            "pct",
+            "celsius",
+            "enum_activity",
+            "steps_per_min",
+            "enum_weather",
+            "kmh",
+            "aqi"
+          ]
+        },
+        "observedAt": {
+          "type": "string",
+          "minLength": 10,
+          "maxLength": 64
+        },
+        "receivedAt": {
+          "type": "string",
+          "minLength": 10,
+          "maxLength": 64
+        },
+        "sourceProvider": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "dataMode": {
+          "type": "string",
+          "enum": ["SIMULATED", "REAL"]
+        },
+        "validationStatus": {
+          "type": "string",
+          "enum": ["VALIDATED", "QUARANTINED_OUT_OF_ORDER"]
+        },
+        "freshnessStatus": {
+          "type": "string",
+          "enum": ["CURRENT", "STALE", "MISSING", "INVALID"]
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "observationId",
+        "authenticatedOwnerId",
+        "metricType",
+        "unit",
+        "observedAt",
+        "receivedAt",
+        "sourceProvider",
+        "dataMode",
+        "validationStatus",
+        "freshnessStatus",
+        "createdAt"
+      ]
+    }
+  },
+  "firestore": {
+    "/users/{uid}": {
+      "schema": { "$ref": "#/entities/UserProfile" },
+      "description": "Root user profile document owned exclusively by {uid}."
+    },
+    "/users/{uid}/settings/{settingId}": {
+      "schema": { "$ref": "#/entities/UserSettings" },
+      "description": "Configurable risk engine thresholds for {uid}."
+    },
+    "/users/{uid}/emergencyContacts/{contactId}": {
+      "schema": { "$ref": "#/entities/EmergencyContact" },
+      "description": "Demo-only emergency contacts owned by {uid}."
+    },
+    "/users/{uid}/observations/{observationId}": {
+      "schema": { "$ref": "#/entities/SimulatedObservation" },
+      "description": "Simulated physiological and environmental telemetry snapshots for {uid}."
+    },
+    "/users/{uid}/riskAssessments/{assessmentId}": {
+      "schema": { "$ref": "#/entities/RiskAssessmentRecord" },
+      "description": "Deterministic risk engine assessment history for {uid}."
+    },
+    "/users/{uid}/alerts/{alertId}": {
+      "schema": { "$ref": "#/entities/SafetyAlertRecord" },
+      "description": "Safety alert lifecycle records (ACTIVE, ACKNOWLEDGED, RESOLVED, CANCELLED) for {uid}."
+    },
+    "/users/{uid}/auditEvents/{eventId}": {
+      "schema": { "$ref": "#/entities/AuditEventRecord" },
+      "description": "Immutable append-only safety audit trail for {uid}."
+    },
+    "/users/{uid}/aiExplanations/{explanationId}": {
+      "schema": { "$ref": "#/entities/AIExplanationRecord" },
+      "description": "Validated AI contextual explanations associated with risk assessments for {uid}."
+    },
+    "/users/{uid}/escalationTasks/{taskId}": {
+      "schema": { "$ref": "#/entities/EscalationTaskRecord" },
+      "description": "Durable server-managed escalation task records for {uid}."
+    },
+    "/users/{uid}/notificationAttempts/{attemptId}": {
+      "schema": { "$ref": "#/entities/NotificationAttemptRecord" },
+      "description": "Notification attempt audit log for {uid}. Client writes of DELIVERED are forbidden."
+    },
+    "/users/{uid}/normalizedObservations/{observationId}": {
+      "schema": { "$ref": "#/entities/NormalizedObservationRecord" },
+      "description": "Normalized observations with mandatory provenance for {uid}. Clients cannot spoof REAL mode from simulation providers."
+    }
+  }
+}
+

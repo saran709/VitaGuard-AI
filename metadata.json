@@ -1,0 +1,6 @@
+{
+  "name": "VitaGuard AI",
+  "description": "Intelligent Personal Safety and Risk Assistant featuring simulated physiological and environmental telemetry, a configurable rule-based risk engine, alert acknowledgement workflows, and deterministic safety explanations.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
